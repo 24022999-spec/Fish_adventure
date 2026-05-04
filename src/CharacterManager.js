@@ -10,6 +10,7 @@ const CHARACTERS = [
     file:        '/assets/models/decorations/sea_creatures/sponge_bob.glb',
     pos:         { x: -5.2,  y: -24,   z:  15.8 },
     scale:       1.5,
+    headY:       4,
     dialogue: {
       text:    'Cậu có thể giúp tớ tìm Gary không ? (có thể cậu ấy đã bị bắt bởi người đàn ông khó tính nào đó -.-)',
       options: ['Không, cậu tự tìm đi', 'Ok bro!'],
@@ -21,6 +22,7 @@ const CHARACTERS = [
     file:        '/assets/models/decorations/sea_creatures/Gary.glb',
     pos:         { x: -15.7, y: -19.4, z: -23.2 },
     scale:       1.0,
+    headY:       3,
     dialogue: {
       text:    'Meow?',
       options: ['Tìm thấy cậu rồi Gary!'],
@@ -33,8 +35,9 @@ const CHARACTERS = [
     pos:         { x:  19.1, y: -20.5, z:  -2.5 },
     scale:       0.03,
     rotY:        100,
+    headY:       3,
     dialogue: {
-      text:    'Ôi khônggg, món của của tớ bị cái máy này nuốt mất rồi TT',
+      text:    'Ôi khônggg, món quà của tớ bị cái máy này nuốt mất rồi TT huhu',
       options: ['Để tớ giúp', 'Haha đáng đời chưa :P'],
     },
   },
@@ -44,18 +47,22 @@ const CHARACTERS = [
     file:        '/assets/models/decorations/sea_creatures/cute_octopus.glb',
     pos:         { x: -11.8, y: -21.3, z:  -3.3 },
     scale:       5.0,
+    headY:       2,
     dialogue: {
-      text:    'Tôi háo hức tới bữa tiệc của Khánh quá!',
-      options: ['Tôi thì không.'],
+      text:    'Không xong rồi!! Tớ làm rơi donut để ăn sinh nhật Khánh rồi!!!',
+      options: ['Tự đi tìm lại đi', 'Để tớ giúp tìm lại cho'],
     },
   },
 ]
 
 export class CharacterManager {
-  constructor(scene, camera, thirdCam) {
-    this._scene    = scene
-    this._camera   = camera
-    this._thirdCam = thirdCam
+  constructor(scene, camera, thirdCam, onDialogueStart = null, onDialogueEnd = null, onDonutQuestAccepted = null) {
+    this._scene                = scene
+    this._camera               = camera
+    this._thirdCam             = thirdCam
+    this._onDialogueStart      = onDialogueStart
+    this._onDialogueEnd        = onDialogueEnd
+    this._onDonutQuestAccepted = onDonutQuestAccepted
     this._mixers   = []
     this._clock    = new THREE.Clock()
     this._loader   = new GLTFLoader()
@@ -124,9 +131,9 @@ export class CharacterManager {
           this._mixers.push(mixer)
         }
 
-        // Place floating sprite at character position Y+1
+        // Place floating sprite above character head
         const sprite = this._createHintSprite()
-        sprite.position.set(data.pos.x, data.pos.y + 1, data.pos.z)
+        sprite.position.set(data.pos.x, data.pos.y + (data.headY ?? 2) + 0.5, data.pos.z)
         sprite.visible = false
         this._scene.add(sprite)
 
@@ -135,6 +142,31 @@ export class CharacterManager {
       undefined,
       (err) => console.error(`[CharacterManager] Failed to load ${data.name}:`, err)
     )
+  }
+
+  // ── World-to-screen chat positioning ────────────────────────────────────
+
+  _projectToScreen(worldPos) {
+    const vec = worldPos.clone()
+    vec.project(this._camera)
+    return {
+      x: (vec.x + 1) / 2 * window.innerWidth,
+      y: -(vec.y - 1) / 2 * window.innerHeight,
+    }
+  }
+
+  _updateChatPosition() {
+    if (!this._activeNPC) return
+    const p         = this._activeNPC.data.pos
+    const headY     = this._activeNPC.data.headY ?? 2
+    // Project body center (not head top) so box stays on screen after zoom
+    const bodyWorld = new THREE.Vector3(p.x, p.y + headY * 0.4, p.z)
+    const screen    = this._projectToScreen(bodyWorld)
+    // Clamp Y: box bottom must be at least 260px from top so the box stays visible
+    const safeY = Math.max(260, Math.min(window.innerHeight * 0.72, screen.y))
+    this._chatEl.style.left = screen.x + 'px'
+    this._chatEl.style.top  = safeY + 'px'
+    // transform: translate(-50%, -100%) → box bottom = safeY, box extends upward
   }
 
   // ── Quest Panel (Find Gary) ──────────────────────────────────────────────
@@ -199,9 +231,9 @@ export class CharacterManager {
     Object.assign(this._chatEl.style, {
       display:        'none',
       position:       'fixed',
-      bottom:         '250px',
-      left:           '40%',
-      transform:      'translateX(-50%)',
+      top:            '0',
+      left:           '0',
+      transform:      'translate(-50%, -100%)',
       flexDirection:  'column',
       alignItems:     'center',
       gap:            '14px',
@@ -251,6 +283,7 @@ export class CharacterManager {
   _startChat(npc) {
     this.isDialogueOpen = true
     this._activeNPC     = npc
+    this._onDialogueStart?.()
 
     this._thirdCam?.setDialogueMode(true)
 
@@ -281,6 +314,7 @@ export class CharacterManager {
     })
 
     this._chatEl.style.display = 'flex'
+    this._updateChatPosition()
     if (npc.sprite) npc.sprite.visible = false
 
     npc.originalQuat.copy(npc.mesh.quaternion)
@@ -291,12 +325,13 @@ export class CharacterManager {
     if (camDir.lengthSq() < 0.01) camDir.set(0, 0, 1)
     camDir.normalize()
 
-    this._targetCamPos.copy(npcPos).addScaledVector(camDir, 5)
-    this._targetCamPos.y = npcPos.y + 2
+    const headY = npc.data.headY ?? 2
+    this._targetCamPos.copy(npcPos).addScaledVector(camDir, 4)
+    this._targetCamPos.y = npcPos.y + headY * 0.5 + 1
 
     const dummy = this._camera.clone()
     dummy.position.copy(this._targetCamPos)
-    dummy.lookAt(npcPos.x, npcPos.y + 1, npcPos.z)
+    dummy.lookAt(npcPos.x, npcPos.y + headY * 0.4, npcPos.z)
     this._targetCamQuat.copy(dummy.quaternion)
   }
 
@@ -304,6 +339,7 @@ export class CharacterManager {
     const activeNPC = this._activeNPC
     this.isDialogueOpen        = false
     this._chatEl.style.display = 'none'
+    this._onDialogueEnd?.()
 
     this._thirdCam?.setDialogueMode(false)
 
@@ -321,6 +357,11 @@ export class CharacterManager {
         this._completeGaryQuest()
       }
 
+      // Hùng option 1 = "Để tớ giúp tìm lại cho" → spawn donut
+      if (activeNPC.data.name === 'Hung' && selectedIdx === 1) {
+        this._onDonutQuestAccepted?.()
+      }
+
       this._activeNPC = null
     }
   }
@@ -334,6 +375,7 @@ export class CharacterManager {
     if (this.isDialogueOpen) {
       this._camera.position.lerp(this._targetCamPos, 0.07)
       this._camera.quaternion.slerp(this._targetCamQuat, 0.07)
+      this._updateChatPosition()
       return
     }
 

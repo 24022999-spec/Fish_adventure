@@ -45,6 +45,14 @@ export class AudioManager {
     this._bgm.currentTime = 0
   }
 
+  pauseBGM() {
+    this._bgm.pause()
+  }
+
+  resumeBGM() {
+    if (this._bgm.paused) this._bgm.play().catch(() => {})
+  }
+
   // Zero-latency collect sound via Web Audio API
   playCollect() {
     if (this._ctx && this._collectBuffer) {

@@ -5,32 +5,37 @@ import { randFloat } from './utils.js'
 
 export class CollectibleManager {
   constructor(scene) {
-    this.scene = scene
+    this.scene  = scene
     this.donuts = []
-    this.total = DONUT_COUNT || 20 // Sử dụng số lượng từ hằng số, mặc định 20 nếu chưa có
+    this.total  = DONUT_COUNT || 10
     this._loadedTemplate = null
-    this._spawnDonuts()
-  }
+    this._spawned        = false
+    this._pendingSpawn   = false
 
-  _spawnDonuts() {
+    // Preload model sẵn, chưa spawn
     const loader = new GLTFLoader()
-    
-    // Load trực tiếp model donut
-    loader.load('/assets/models/donut.glb', 
+    loader.load('/assets/models/donut.glb',
       (gltf) => {
         this._loadedTemplate = gltf.scene
-        this._populateDonuts()
+        if (this._pendingSpawn) this._populateDonuts()
       },
       undefined,
-      (err) => {
-        console.error("[CollectibleManager] Không thể tải model donut:", err)
-      }
+      (err) => console.error('[CollectibleManager] Không thể tải model donut:', err)
     )
   }
 
-  _populateDonuts() {
-    if (!this._loadedTemplate) return
+  // Gọi từ bên ngoài khi quest Hùng được chấp nhận
+  spawnDonuts() {
+    if (this._spawned) return
+    this._spawned = true
+    if (this._loadedTemplate) {
+      this._populateDonuts()
+    } else {
+      this._pendingSpawn = true // model chưa load xong, spawn khi load xong
+    }
+  }
 
+  _populateDonuts() {
     for (let i = 0; i < this.total; i++) {
       let x, z, t = 0
       do {
@@ -39,7 +44,6 @@ export class CollectibleManager {
         t++
       } while (Math.hypot(x, z) < 8 && t < 20)
 
-      // Cố định độ cao Y trong khoảng từ -23 đến -15 theo đúng yêu cầu của bạn
       const y = randFloat(-23, -15)
 
       const donutMesh = this._loadedTemplate.clone(true)
@@ -47,10 +51,9 @@ export class CollectibleManager {
       donutMesh.rotation.set(0, Math.random() * Math.PI * 2, 0)
       donutMesh.scale.setScalar(0.25)
 
-      // Bật bóng đổ
       donutMesh.traverse(child => {
         if (child.isMesh) {
-          child.castShadow = true
+          child.castShadow    = true
           child.receiveShadow = true
         }
       })
@@ -59,43 +62,29 @@ export class CollectibleManager {
       this.scene.add(donutMesh)
 
       this.donuts.push({
-        mesh: donutMesh,
-        position: new THREE.Vector3(x, y, z),
+        mesh:      donutMesh,
+        position:  new THREE.Vector3(x, y, z),
         collected: false,
-        id: i
+        id:        i,
       })
     }
   }
 
   update(player) {
-    if (!this.donuts || this.donuts.length === 0) return
+    if (!this._spawned || this.donuts.length === 0) return
     const pp = player.position
 
-    this.donuts.forEach((d) => {
+    this.donuts.forEach(d => {
       if (d.collected) return
-
-      // Cập nhật animation xoay tròn
-      if (d.mesh) {
-        d.mesh.rotation.y += 0.02
-      }
-
-      // Kiểm tra va chạm
+      if (d.mesh) d.mesh.rotation.y += 0.02
       if (pp.distanceTo(d.position) < COLLECT_DIST) {
         d.collected = true
         player.score++
-
-        if (d.mesh) {
-          this.scene.remove(d.mesh) // Xóa ra khỏi scene
-        }
+        if (d.mesh) this.scene.remove(d.mesh)
       }
     })
   }
 
-  get remaining() {
-    return this.donuts.filter(d => !d.collected).length
-  }
-  
-  get collected() {
-    return this.donuts.filter(d => d.collected).length
-  }
+  get remaining()  { return this.donuts.filter(d => !d.collected).length }
+  get collected()  { return this.donuts.filter(d =>  d.collected).length }
 }

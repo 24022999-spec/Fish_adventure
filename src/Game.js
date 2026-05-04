@@ -92,8 +92,11 @@ export class Game {
     this.audio        = new AudioManager()
     this.particles    = new ParticleSystem(this.scene)
     this.minimap      = new Minimap(this.player, this.collectibles, MAP_SIZE)
-    this.questSystem  = new QuestSystem(this.scene, this.renderer)
-    this.characters   = new CharacterManager(this.scene, this.camera, this.thirdCam)
+    const hidePlayer = () => { if (this.player?.mesh) this.player.mesh.visible = false }
+    const showPlayer = () => { if (this.player?.mesh) this.player.mesh.visible = true }
+
+    this.questSystem  = new QuestSystem(this.scene, this.renderer, this.audio, this.camera, this.thirdCam, hidePlayer, showPlayer)
+    this.characters   = new CharacterManager(this.scene, this.camera, this.thirdCam, hidePlayer, showPlayer, () => this.collectibles.spawnDonuts())
     this.tugBoat      = new TugBoat(this.scene)
 
     // --- Resize ---
@@ -198,7 +201,8 @@ export class Game {
     const time = performance.now() * 0.001
 
     // 1. Player + Camera (tắt khi minigame hoặc dialogue đang mở)
-    if (!this.questSystem.isMinigameOpen && !this.characters.isDialogueOpen) {
+    const anyDialogue = this.characters.isDialogueOpen || this.questSystem.isDialogueOpen
+    if (!this.questSystem.isMinigameOpen && !anyDialogue) {
       this.player.update(this.input, this.thirdCam)
       this.thirdCam.update()
     }

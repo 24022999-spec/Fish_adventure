@@ -6,6 +6,7 @@ export class UIManager {
     this.coordEl  = document.getElementById('coord-display')
 
     // Ẩn các UI không còn dùng trong gameplay mới
+    if (this.scoreEl)  this.scoreEl.style.display  = 'none'
     if (this.heightEl) this.heightEl.style.display = 'none'
     if (this.chargeEl?.parentElement) this.chargeEl.parentElement.style.display = 'none'
   }

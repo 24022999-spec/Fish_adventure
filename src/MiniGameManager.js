@@ -10,18 +10,21 @@ import * as THREE from 'three'
 //   4. Khi win → đóng iframe → trả về quest complete
 //   5. Khi ESC → đóng iframe → quest không tính
 //
-// Minigame cần được đặt ở: /minigame/index.html
-// (copy thư mục Con-ca-qua-duong-master vào public/minigame/)
+// Minigame cần được đặt ở: /minigame1/index.html
+// (copy thư mục Con-ca-qua-duong-master vào public/minigame1/)
 // ================================================================
 
 export class MiniGameManager {
-  constructor(mainRenderer, onComplete, onExit) {
-    this.mainRenderer = mainRenderer
-    this.onComplete   = onComplete  // callback khi thắng
-    this.onExit       = onExit      // callback khi thoát (ESC)
-    this._isOpen      = false
-    this._overlay     = null
-    this._iframe      = null
+  constructor(mainRenderer, onComplete, onExit, { pauseMainBgm, resumeMainBgm } = {}) {
+    this.mainRenderer   = mainRenderer
+    this.onComplete     = onComplete  // callback khi thắng
+    this.onExit         = onExit      // callback khi thoát (ESC)
+    this._pauseMainBgm  = pauseMainBgm  || null
+    this._resumeMainBgm = resumeMainBgm || null
+    this._isOpen        = false
+    this._overlay       = null
+    this._iframe        = null
+    this._bgm           = null
 
     this._createOverlay()
     this._listenMessages()
@@ -135,8 +138,19 @@ export class MiniGameManager {
       document.exitPointerLock()
     }
 
-    // Load minigame vào iframe từ public/minigame/index.html
-    this._iframe.src = '/minigame/index.html'
+    // Tạm dừng BGM chính
+    this._pauseMainBgm?.()
+
+    // Load minigame vào iframe từ public/minigame1/index.html
+    this._iframe.src = '/minigame1/index.html'
+
+    // Phát BGM của minigame1
+    if (!this._bgm) {
+      this._bgm = new Audio('/minigame1/bgm1.mp3')
+      this._bgm.loop = true
+    }
+    this._bgm.currentTime = 0
+    this._bgm.play().catch(() => {})
 
     this._overlay.style.display = 'flex'
 
@@ -158,6 +172,14 @@ export class MiniGameManager {
     if (!this._isOpen) return
 
     this._overlay.style.opacity = '0'
+
+    // Dừng BGM minigame và khôi phục BGM chính
+    if (this._bgm) {
+      this._bgm.pause()
+      this._bgm.currentTime = 0
+    }
+    this._resumeMainBgm?.()
+
     setTimeout(() => {
       this._isOpen = false
       this._overlay.style.display = 'none'

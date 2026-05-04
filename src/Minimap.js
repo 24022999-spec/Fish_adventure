@@ -10,13 +10,13 @@ export class Minimap {
     this.canvas.height = this.size
     this.ctx    = this.canvas.getContext('2d')
 
-    // Offscreen canvas for donut dots — only redrawn when count changes
-    this._donutCanvas = document.createElement('canvas')
+    // Offscreen canvas cho donut dots — chỉ vẽ lại khi số lượng thay đổi
+    this._donutCanvas     = document.createElement('canvas')
     this._donutCanvas.width  = this.size
     this._donutCanvas.height = this.size
-    this._donutCtx    = this._donutCanvas.getContext('2d')
-    this._lastDonutCount = -1
-    this._frame = 0
+    this._donutCtx        = this._donutCanvas.getContext('2d')
+    this._lastDonutCount  = -1
+    this._frame           = 0
 
     Object.assign(this.canvas.style, {
       position:      'fixed',
@@ -36,8 +36,8 @@ export class Minimap {
 
   _worldToMap(x, z) {
     const half = this.mapSize
-    const px = ((x + half) / (half * 2)) * this.size
-    const py = ((z + half) / (half * 2)) * this.size
+    const px   = ((x + half) / (half * 2)) * this.size
+    const py   = ((z + half) / (half * 2)) * this.size
     return { px, py }
   }
 
@@ -56,18 +56,20 @@ export class Minimap {
   }
 
   update() {
-    // Minimap doesn't need 60fps — redraw every 3 frames (~20fps)
     this._frame++
     if (this._frame % 3 !== 0) return
 
-    const ctx  = this.ctx
-    const size = this.size
+    const ctx       = this.ctx
+    const size      = this.size
+    const hasQuest  = this.collectibles._spawned
 
-    // Redraw static donut layer only when a donut is collected
-    const donutCount = this.collectibles.remaining
-    if (donutCount !== this._lastDonutCount) {
-      this._redrawDonutLayer()
-      this._lastDonutCount = donutCount
+    // Vẽ lại donut layer chỉ khi quest active và số lượng thay đổi
+    if (hasQuest) {
+      const donutCount = this.collectibles.remaining
+      if (donutCount !== this._lastDonutCount) {
+        this._redrawDonutLayer()
+        this._lastDonutCount = donutCount
+      }
     }
 
     ctx.clearRect(0, 0, size, size)
@@ -80,10 +82,12 @@ export class Minimap {
     ctx.fillStyle = 'rgba(0, 80, 120, 0.9)'
     ctx.fillRect(0, 0, size, size)
 
-    // Composite pre-rendered donut layer
-    ctx.drawImage(this._donutCanvas, 0, 0)
+    // Composite donut layer (chỉ khi quest active)
+    if (hasQuest) {
+      ctx.drawImage(this._donutCanvas, 0, 0)
+    }
 
-    // Player
+    // Player dot
     const pp = this.player.position
     const { px, py } = this._worldToMap(pp.x, pp.z)
 
@@ -105,14 +109,17 @@ export class Minimap {
     ctx.lineWidth   = 2
     ctx.stroke()
 
-    ctx.fillStyle = 'rgba(255,255,255,0.7)'
-    ctx.font      = '10px sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText(
-      `🍩 ${this.collectibles.collected}/${this.collectibles.total}`,
-      size / 2,
-      size - 8
-    )
+    // Bộ đếm donut — chỉ hiện khi quest active
+    if (hasQuest) {
+      ctx.fillStyle = 'rgba(255,255,255,0.85)'
+      ctx.font      = 'bold 11px sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText(
+        `🍩 ${this.collectibles.collected} / ${this.collectibles.total}`,
+        size / 2,
+        size - 8
+      )
+    }
   }
 
   destroy() {

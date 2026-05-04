@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FINN-MAN · Deep Sea Maze</title>
+<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="vignette"></div>
+
+<!-- Bảng điều khiển bên trái -->
+<div id="left-panel">
+  <div class="hud-brand">
+    <span class="hud-brand-title" style="display:block;width:100%;text-align:center">FiNN MAN</span>
+    <span class="hud-brand-sub" style="display:block;width:100%;text-align:center">DEEP SEA MAZE</span>
+  </div>
+
+  <div class="panel-divider"></div>
+
+  <div class="hud-stats">
+    <div class="hud-stat hud-stat-time">
+      <span class="hud-stat-lbl">TIME</span>
+      <span class="hud-stat-val hud-time" id="el-time">00:00</span>
+    </div>
+    <div class="hud-lives">
+      <span class="hud-lives-lbl">LIVES</span>
+      <div class="hud-hearts" id="el-hearts">🐠🐠🐠</div>
+    </div>
+    <div class="hud-stat hud-stat-sm">
+      <span class="hud-stat-lbl">SPRINKLES</span>
+      <div class="hud-donut-counter-row" style="gap:10px">
+        <span class="hud-stat-val hud-stat-val-sm" id="el-sprinkle-count">0</span>
+        <span class="hud-donut-sep">/</span>
+        <span class="hud-stat-val hud-stat-val-sm" id="el-sprinkle-total">0</span>
+      </div>
+    </div>
+    <div class="hud-stat hud-donut-box">
+      <span class="hud-stat-lbl">DONUTS</span>
+      <div class="hud-donut-counter-row">
+        <span class="hud-donut-num" id="el-donut-count">0</span>
+        <span class="hud-donut-sep">/</span>
+        <span class="hud-donut-num hud-donut-total">4</span>
+      </div>
+      <div class="hud-donut-svgs" id="el-donut-icons">
+        <div class="donut-ring-wrap" data-index="0"><canvas class="donut-panel-canvas" width="80" height="80"></canvas></div>
+        <div class="donut-ring-wrap" data-index="1"><canvas class="donut-panel-canvas" width="80" height="80"></canvas></div>
+        <div class="donut-ring-wrap" data-index="2"><canvas class="donut-panel-canvas" width="80" height="80"></canvas></div>
+        <div class="donut-ring-wrap" data-index="3"><canvas class="donut-panel-canvas" width="80" height="80"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- Canvas game -->
+<div id="game-area">
+  <canvas id="c"></canvas>
+</div>
+
+<!-- Lớp phủ: nhập tên / bắt đầu / tạm dừng / thua / thắng / mất mạng -->
+<div id="overlay">
+  <div class="ov-card" id="ov-card-start" style="display:none">
+    <div class="ov-fish-icon">🐠</div>
+    <div class="ov-title">FiNN-MAN</div>
+    <div class="ov-sub-brand">DEEP SEA MAZE</div>
+    <div class="ov-divider"></div>
+    <div class="ov-controls">
+      <div class="ov-ctrl">
+        <span class="ov-key">↑↓←→</span>
+        <span class="ov-key-lbl">MOVE</span>
+      </div>
+      <div class="ov-ctrl">
+        <span class="ov-key">ESC</span>
+        <span class="ov-key-lbl">PAUSE</span>
+      </div>
+    </div>
+    <div class="ov-start">PRESS MOVE KEY TO START</div>
+  </div>
+
+  <div class="ov-card" id="ov-card-pause" style="display:none">
+    <div style="font-size:72px;color:#e5bf62;line-height:1;filter:drop-shadow(0 0 24px rgba(229,191,98,0.7))">⏸</div>
+    <div class="ov-title" style="color:#e5bf62;text-shadow:0 0 28px rgba(229,191,98,0.7);font-size:clamp(28px,4vw,48px)">PAUSED</div>
+    <div class="ov-sub">PRESS ESC TO CONTINUE</div>
+  </div>
+
+  <div class="ov-card" id="ov-card-gameover" style="display:none">
+    <div style="font-size:72px">💀</div>
+    <div class="ov-title ov-title-danger">GAME OVER</div>
+    <div class="ov-divider"></div>
+    <div class="ov-start">PRESS ANY MOVE KEY TO RETRY</div>
+  </div>
+
+  <div class="ov-card" id="ov-card-win" style="display:none">
+    <div class="win-donut-wrap">
+      <canvas id="win-donut-canvas" width="240" height="240"></canvas>
+      <div class="win-donut-fallback">🍩</div>
+    </div>
+    <div class="ov-title ov-title-gold" style="font-size:clamp(28px,4.5vw,52px)">YOU WIN!</div>
+    <div class="ov-sub-brand" style="font-size:13px;letter-spacing:2px">★ PRESENT FOUND ★</div>
+    <div class="ov-start" style="font-size:11px">PRESS ANY KEY TO CONTINUE</div>
+  </div>
+
+  <div class="ov-card" id="ov-card-life-lost" style="display:none">
+    <div class="life-skull">💀</div>
+    <div class="ov-title ov-title-danger">YOU DIED</div>
+    <div class="life-lost-lives-wrap">
+      <div class="life-lost-lbl">LIVES REMAINING</div>
+      <div class="life-lost-hearts" id="life-lost-hearts"></div>
+    </div>
+    <div class="ov-start" style="color:#e5bf62;text-shadow:0 0 12px rgba(229,191,98,0.6)">PRESS ANY MOVE KEY TO CONTINUE</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="assets/logic/geometry.js"></script>
+<script src="assets/model/map.js"></script>
+<script src="assets/model/entities.js"></script>
+<script src="assets/logic/pathfinding.js"></script>
+<script src="assets/game/state.js"></script>
+<script src="assets/game/renderer.js"></script>
+<script src="assets/game/world.js"></script>
+<script src="assets/model/fish.js"></script>
+<script src="assets/model/pellets.js"></script>
+<script src="assets/game/scene-objects.js"></script>
+<script src="assets/ui/hud.js"></script>
+<script src="assets/ui/input.js"></script>
+<script src="assets/game/loop.js"></script>
+<script src="assets/game/main.js"></script>
+<script src="assets/ui/win-overlay.js"></script>
+</body>
+</html>

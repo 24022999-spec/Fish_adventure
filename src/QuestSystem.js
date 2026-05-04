@@ -26,9 +26,10 @@ export const QUEST_STATE = {
 }
 
 export class QuestSystem {
-  constructor(scene, renderer) {
+  constructor(scene, renderer, audio = null, camera = null, thirdCam = null, onDialogueStart = null, onDialogueEnd = null) {
     this.scene    = scene
     this.renderer = renderer
+    this.audio    = audio
     this.state    = QUEST_STATE.IDLE
 
     // Vị trí đặt Linh — tâm đáy biển (SEA_FLOOR_Y = -25)
@@ -38,14 +39,22 @@ export class QuestSystem {
     this.questGiver = new QuestGiver(
       scene,
       linghPos,
-      () => this._onQuestAccepted()
+      () => this._onQuestAccepted(),
+      camera,
+      thirdCam,
+      onDialogueStart,
+      onDialogueEnd
     )
 
     // Khởi tạo MiniGameManager
     this.miniGame = new MiniGameManager(
       renderer,
       () => this._onMiniGameWin(),
-      () => this._onMiniGameExit()
+      () => this._onMiniGameExit(),
+      {
+        pauseMainBgm:  () => this.audio?.pauseBGM(),
+        resumeMainBgm: () => this.audio?.resumeBGM(),
+      }
     )
 
     // HUD thông báo quest
@@ -65,7 +74,8 @@ export class QuestSystem {
   _onMiniGameWin() {
     this.state = QUEST_STATE.DONE
     this.questGiver.markComplete()
-    this._showQuestHUD('✅ Nhiệm vụ hoàn thành! Cảm ơn cậu đã giúp đỡ!', true)
+    this._showQuestHUD('✅ Nhiệm vụ hoàn thành! Cảm ơn cậu đã giúp đỡ!')
+    this._hudTimer = setTimeout(() => this._hideQuestHUD(), 3000)
     this._playCompletionEffect()
     console.log('[Quest] COMPLETE ✓')
   }
@@ -159,7 +169,8 @@ export class QuestSystem {
     }
   }
 
-  get isMinigameOpen() { return this.miniGame.isOpen }
+  get isMinigameOpen()  { return this.miniGame.isOpen }
+  get isDialogueOpen()  { return this.questGiver.isDialogueOpen }
 
   destroy() {
     this.questGiver.destroy()
