@@ -6,7 +6,7 @@ let targetObjectGroup = null;
 export function loadTargetObject(scene, getPositionFromGrid, obstaclesData) {
     return new Promise((resolve) => {
         const loader = new GLTFLoader();
-        loader.load('../object.glb', (gltf) => {
+        loader.load('object.glb', (gltf) => {
             targetObjectGroup = new THREE.Group();
             const obj = gltf.scene;
 

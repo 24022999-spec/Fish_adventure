@@ -53,7 +53,7 @@ scene.add(lighting);
 
 // 3. LOAD MAP 3D
 const loader = new GLTFLoader();
-loader.load('../map.glb', (gltf) => {
+loader.load('map.glb', (gltf) => {
     gltf.scene.traverse((child) => {
         if (child.isMesh) {
             child.receiveShadow = true;
@@ -100,7 +100,7 @@ loadSharkModel(loader).then(() => {
     });
 
     // Load đá
-    loader.load('../Rocks.glb', (gltf) => {
+    loader.load('Rocks.glb', (gltf) => {
         gltf.scene.traverse((child) => {
             if (child.isMesh && child.name.includes('Rock')) {
                 rockTemplates.push(child);
@@ -118,7 +118,7 @@ loadSharkModel(loader).then(() => {
 });
 
 // Load rong biển
-loader.load('../Seaweed.glb', (gltf) => {
+loader.load('Seaweed.glb', (gltf) => {
     // store the whole scene as a template and keep the animation clips
     seaweedTemplateScene = gltf.scene;
     seaweedAnimations = gltf.animations || [];
@@ -363,7 +363,7 @@ function triggerWin() {
     window.parent.postMessage({ type: 'MINIGAME_WIN' }, '*');
     
     const imgElement = document.getElementById('win-image');
-    imgElement.src = "../image.png";
+    imgElement.src = "image.png";
     imgElement.style.display = 'block';
 }
 

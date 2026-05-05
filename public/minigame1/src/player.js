@@ -21,7 +21,7 @@ export async function createPlayer(startPos, getPositionFromGrid) {
     // 2. Load mô hình con cá
     const loader = new GLTFLoader();
     try {
-        const gltf = await loader.loadAsync('../fish.glb');
+        const gltf = await loader.loadAsync('fish.glb');
         const fish = gltf.scene;
         fishModel = fish;
 
