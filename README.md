@@ -58,9 +58,7 @@ npm run preview
 
 Game đã được cấu hình sẵn để deploy lên GitHub Pages tại:
 
-```
-https://24022999-spec.github.io/Darwin-s-adventure/
-```
+https://24022999-spec.github.io/Darwin-s_adventure/
 
 Để deploy, push code lên nhánh `main` và bật GitHub Pages trong phần **Settings → Pages → Source: GitHub Actions**.
 
