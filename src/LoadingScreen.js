@@ -13,8 +13,13 @@ export class LoadingScreen {
   }
 
   _build() {
+    const fontUrl = import.meta.env.BASE_URL + 'PixelViet.ttf'
     const style = document.createElement('style')
     style.textContent = `
+      @font-face {
+        font-family: 'PixelViet';
+        src: url('${fontUrl}') format('truetype');
+      }
       #ls-root {
         position: fixed; inset: 0; z-index: 9999;
         background: #5bc8e8;
@@ -31,7 +36,7 @@ export class LoadingScreen {
       #ls-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
       #ls-label {
         color: #fff; font-size: 14px; font-weight: bold;
-        letter-spacing: 2px; font-family: sans-serif;
+        letter-spacing: 2px; font-family: 'PixelViet', sans-serif;
       }
       #ls-track {
         width: 220px; height: 14px;
@@ -42,6 +47,12 @@ export class LoadingScreen {
         height: 100%; width: 0%;
         background: #fff; border-radius: 7px;
         transition: width 0.15s ease;
+      }
+      #ls-subtitle {
+        margin-top: 20px;
+        color: rgba(255,255,255,0.85); font-size: 13px;
+        font-family: 'PixelViet', sans-serif;
+        text-align: center; line-height: 1.6;
       }
     `
     document.head.appendChild(style)
@@ -70,6 +81,7 @@ export class LoadingScreen {
     wrap.innerHTML = `
       <div id="ls-label">Loading</div>
       <div id="ls-track"><div id="ls-fill"></div></div>
+      <div id="ls-subtitle">Chờ một tí nhé, sắp xong ùi &lt;3</div>
     `
 
     root.appendChild(spinner)
