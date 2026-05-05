@@ -112,7 +112,6 @@ Darwin-s_adventure/
 | `E` | Tương tác / Nói chuyện với NPC |
 | `Space` (giữ) | Boost |
 | `ESC` | Thoát minigame |
-| `L` | Skip minigame (tính hoàn thành) |
 
 ---
 
