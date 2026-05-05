@@ -110,7 +110,6 @@ Darwin-s_adventure/
 | Di chuyển chuột | Xoay camera |
 | Scroll chuột | Zoom in / out |
 | `E` | Tương tác / Nói chuyện với NPC |
-| `Space` (giữ) | Boost |
 | `ESC` | Thoát minigame |
 
 ---
