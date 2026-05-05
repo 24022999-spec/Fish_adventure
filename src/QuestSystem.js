@@ -26,11 +26,12 @@ export const QUEST_STATE = {
 }
 
 export class QuestSystem {
-  constructor(scene, renderer, audio = null, camera = null, thirdCam = null, onDialogueStart = null, onDialogueEnd = null) {
-    this.scene    = scene
-    this.renderer = renderer
-    this.audio    = audio
-    this.state    = QUEST_STATE.IDLE
+  constructor(scene, renderer, audio = null, camera = null, thirdCam = null, onDialogueStart = null, onDialogueEnd = null, onQuestComplete = null) {
+    this.scene           = scene
+    this.renderer        = renderer
+    this.audio           = audio
+    this.onQuestComplete = onQuestComplete
+    this.state           = QUEST_STATE.IDLE
 
     // Vị trí đặt Linh — tâm đáy biển (SEA_FLOOR_Y = -25)
     const linghPos = new THREE.Vector3(-7.8, -22, -10.8)
@@ -68,23 +69,21 @@ export class QuestSystem {
     this._showQuestHUD('🎯 Nhiệm vụ đang thực hiện: Vượt qua con đường nguy hiểm')
     // Mở minigame sau 0.5s (để dialogue đóng mượt)
     setTimeout(() => this.miniGame.open(), 500)
-    console.log('[Quest] Accepted → opening minigame')
   }
 
   _onMiniGameWin() {
     this.state = QUEST_STATE.DONE
     this.questGiver.markComplete()
+    this.onQuestComplete?.()
     this._showQuestHUD('✅ Nhiệm vụ hoàn thành! Cảm ơn cậu đã giúp đỡ!')
     this._hudTimer = setTimeout(() => this._hideQuestHUD(), 3000)
     this._playCompletionEffect()
-    console.log('[Quest] COMPLETE ✓')
   }
 
   _onMiniGameExit() {
     this.state = QUEST_STATE.IDLE
     this._showQuestHUD('⚠️ Nhiệm vụ bị bỏ dở. Hãy nói chuyện với Linh để thử lại.')
     setTimeout(() => this._hideQuestHUD(), 4000)
-    console.log('[Quest] Abandoned')
   }
 
   // — Quest HUD ————————————————————————————————————————————

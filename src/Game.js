@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { RGBELoader }        from 'three/examples/jsm/loaders/RGBELoader.js'
+import { GLTFLoader }        from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { ThirdPersonCamera } from './ThirdPersonCamera.js'
 import { Player }            from './Player.js'
 import { InputManager }      from './InputManager.js'
@@ -13,7 +14,9 @@ import { Minimap }           from './Minimap.js'
 import { MAP_SIZE }          from './constants.js'
 import { QuestSystem }       from './QuestSystem.js'
 import { CharacterManager }  from './CharacterManager.js'
-import { TugBoat }           from './TugBoat.js'
+import { MiniGameManager }   from './MiniGameManager.js'
+import { MainQuestPanel }    from './MainQuestPanel.js'
+import { EndingScreen }      from './EndingScreen.js'
 
 export class Game {
   constructor() {
@@ -44,11 +47,8 @@ export class Game {
       this.scene.environment  = hdrTexture
     })
 
-    // --- Cached underwater effect objects (reused every frame, never recreated) ---
     this._underwaterBgColor = new THREE.Color()
-    this._fogUnderwater     = new THREE.Fog(this._underwaterBgColor, 30, 120)
-    this._fogAbove          = new THREE.FogExp2(0x87ceeb, 0.002)
-    this._wasUnderwater     = null // null = uninitialized, forces first-frame setup
+    this._wasUnderwater     = null
 
     // --- Ánh sáng ---
     this._ambientLight = new THREE.AmbientLight(0xc8e8ff, 0.4)
@@ -94,10 +94,55 @@ export class Game {
     this.minimap      = new Minimap(this.player, this.collectibles, MAP_SIZE)
     const hidePlayer = () => { if (this.player?.mesh) this.player.mesh.visible = false }
     const showPlayer = () => { if (this.player?.mesh) this.player.mesh.visible = true }
+    const bgmOpts    = {
+      pauseMainBgm:  () => this.audio?.pauseBGM(),
+      resumeMainBgm: () => this.audio?.resumeBGM(),
+    }
 
-    this.questSystem  = new QuestSystem(this.scene, this.renderer, this.audio, this.camera, this.thirdCam, hidePlayer, showPlayer)
-    this.characters   = new CharacterManager(this.scene, this.camera, this.thirdCam, hidePlayer, showPlayer, () => this.collectibles.spawnDonuts())
-    this.tugBoat      = new TugBoat(this.scene)
+    this.mainQuestPanel = new MainQuestPanel()
+    this.endingScreen   = new EndingScreen()
+    this._endingTriggered    = false
+    this._allQuestsBannerShown = false
+    this._donutQuestDone     = false
+
+    this.miniGame2 = new MiniGameManager(
+      this.renderer,
+      () => this.mainQuestPanel.completeTask('dat'),
+      null,
+      {
+        ...bgmOpts,
+        url:    '/minigame2/index.html',
+        bgmUrl: '/minigame2/bg_music/bgm2.mp3',
+        title:  'Nhiệm vụ: Giúp Đạt tìm món quà',
+      }
+    )
+
+    this.questSystem = new QuestSystem(
+      this.scene, this.renderer, this.audio,
+      this.camera, this.thirdCam,
+      hidePlayer, showPlayer,
+      () => this.mainQuestPanel.completeTask('linh')
+    )
+
+    this.characters = new CharacterManager(
+      this.scene, this.camera, this.thirdCam,
+      hidePlayer, showPlayer,
+      () => this.collectibles.spawnDonuts(),
+      () => this.miniGame2.open(),
+      () => this.mainQuestPanel.onKhanhAccepted(),
+      () => this.mainQuestPanel.completeTask('spongebob'),
+      () => this.mainQuestPanel.allDone,
+      () => { this._endingTriggered = true; this.mainQuestPanel.hideKhanhHint(); this.endingScreen.show('happy') },
+    )
+
+    // --- TugBoatWithNet ---
+    new GLTFLoader().load('/assets/models/decorations/sea_creatures/TugBoatWithNet.glb', (gltf) => {
+      const boat = gltf.scene
+      boat.position.set(15.8, 3.5, 24.7)
+      boat.scale.setScalar(2.5)
+      boat.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true } })
+      this.scene.add(boat)
+    })
 
     // --- Resize ---
     window.addEventListener('resize', () => {
@@ -234,12 +279,30 @@ export class Game {
     // 9b. NPC characters
     this.characters.update(this.player.position)
 
-    // 9c. TugBoat + fishing net swing
-    this.tugBoat.update(time)
 
-    // 9. Win condition
-    if (this.collectibles.remaining === 0 && this.collectibles.collected > 0) {
-      console.log('WIN! Tổng điểm:', this.player.score)
+    // 9. Donut quest completion (Hùng)
+    if (this.collectibles._spawned &&
+        this.collectibles.remaining === 0 &&
+        this.collectibles.collected > 0 &&
+        !this._donutQuestDone) {
+      this._donutQuestDone = true
+      this.mainQuestPanel.completeTask('hung')
+    }
+
+    if (!this._endingTriggered) {
+      // Hiện hint "Hãy nói với Khánh" khi all quests done
+      if (this.mainQuestPanel.allDone && !this._allQuestsBannerShown) {
+        this._allQuestsBannerShown = true
+        this.mainQuestPanel.showKhanhHint()
+      }
+
+      // Sashimi ending: vùng cầu bán kính 3 quanh TugBoatWithNet
+      const pp = this.player.position
+      const dx = pp.x - 15.8, dy = pp.y - 3.5, dz = pp.z - 24.7
+      if (dx * dx + dy * dy + dz * dz < 9) {
+        this._endingTriggered = true
+        this.endingScreen.show('sashimi')
+      }
     }
 
     // 10. Underwater effect

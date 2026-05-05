@@ -32,7 +32,7 @@ function eatTile(){
   const t=map[y][x];
   if(t==="."){map[y][x]=" ";pellets--;sprinklesEaten++;removePellet3D(x,y);}
   else if(t==="o"){map[y][x]=" ";pellets--;donutsLeft=Math.max(0,donutsLeft-1);donutsEaten=Math.min(4,donutsEaten+1);frightenedUntil=performance.now()+POWER_MS;removePellet3D(x,y);}
-  if(t==="."||t==="o"){updateHUD();if(pellets===0){started=false;paused=true;wonGame=true;}}
+  if(t==="."||t==="o"){updateHUD();if(pellets===0){started=false;paused=true;wonGame=true;window.parent.postMessage({type:'MINIGAME_WIN'},'*');}}
 }
 
 function updateGhosts(dt,now){

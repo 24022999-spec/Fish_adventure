@@ -53,16 +53,35 @@ const CHARACTERS = [
       options: ['Tự đi tìm lại đi', 'Để tớ giúp tìm lại cho'],
     },
   },
+  {
+    name:        'Khanh',
+    displayName: 'Khánh',
+    file:        '/assets/models/decorations/sea_creatures/patsy_the_turtle.glb',
+    pos:         { x: 4.4, y: -21.1, z: -5.7 },
+    scale:       1.0,
+    headY:       2,
+    dialogue: {
+      text:    'Chào mừng cậu đã đến với tiệc sinh nhật của tớ! Chúng ta sẽ bắt đầu ngay khi mọi người chuẩn bị xong, cậu hãy đến hỏi mọi người xem họ chuẩn bị xong chưa nhá!',
+      options: ['Ok, để tớ đi hỏi ngay!'],
+    },
+  },
 ]
 
 export class CharacterManager {
-  constructor(scene, camera, thirdCam, onDialogueStart = null, onDialogueEnd = null, onDonutQuestAccepted = null) {
-    this._scene                = scene
-    this._camera               = camera
-    this._thirdCam             = thirdCam
-    this._onDialogueStart      = onDialogueStart
-    this._onDialogueEnd        = onDialogueEnd
-    this._onDonutQuestAccepted = onDonutQuestAccepted
+  constructor(scene, camera, thirdCam, onDialogueStart = null, onDialogueEnd = null, onDonutQuestAccepted = null, onDatQuestAccepted = null, onKhanhAccepted = null, onGaryQuestDone = null, getAllQuestsDone = null, onKhanhFinalAccepted = null) {
+    this._scene                 = scene
+    this._camera                = camera
+    this._thirdCam              = thirdCam
+    this._onDialogueStart       = onDialogueStart
+    this._onDialogueEnd         = onDialogueEnd
+    this._onDonutQuestAccepted  = onDonutQuestAccepted
+    this._onDatQuestAccepted    = onDatQuestAccepted
+    this._onKhanhAccepted       = onKhanhAccepted
+    this._onGaryQuestDone       = onGaryQuestDone
+    this._getAllQuestsDone       = getAllQuestsDone
+    this._onKhanhFinalAccepted  = onKhanhFinalAccepted
+    this._khanhTalked           = false
+    this._khanhFinalPhase       = false
     this._mixers   = []
     this._clock    = new THREE.Clock()
     this._loader   = new GLTFLoader()
@@ -218,6 +237,7 @@ export class CharacterManager {
       labelEl.textContent = 'Gary đã được tìm thấy!'
       labelEl.style.color = '#88ff88'
     }
+    this._onGaryQuestDone?.()
     setTimeout(() => {
       this._questPanel.style.opacity = '0'
       setTimeout(() => { this._questPanel.style.display = 'none' }, 400)
@@ -270,7 +290,7 @@ export class CharacterManager {
       }
       if (this.isDialogueOpen && this._activeNPC) {
         const idx  = parseInt(e.key) - 1
-        const opts = this._activeNPC.data.dialogue.options
+        const opts = this._resolveDialogue(this._activeNPC).options
         if (!isNaN(idx) && idx >= 0 && idx < opts.length) {
           this._endChat(idx)
         }
@@ -280,6 +300,26 @@ export class CharacterManager {
 
   // ── Dialogue ─────────────────────────────────────────────────────────────
 
+  // Trả về dialogue phù hợp với phase hiện tại của Khánh
+  _resolveDialogue(npc) {
+    if (npc.data.name !== 'Khanh' || !this._khanhTalked) {
+      this._khanhFinalPhase = false
+      return npc.data.dialogue
+    }
+    if (this._getAllQuestsDone?.()) {
+      this._khanhFinalPhase = true
+      return {
+        text:    'OK, Hãy bắt đầu nàoooo!!!',
+        options: ['🎉 Bắt đầu thôi!'],
+      }
+    }
+    this._khanhFinalPhase = false
+    return {
+      text:    'Chờ mọi người chuẩn bị xong đã nhé! 😊',
+      options: ['Ok, tớ sẽ đi hỏi thêm!'],
+    }
+  }
+
   _startChat(npc) {
     this.isDialogueOpen = true
     this._activeNPC     = npc
@@ -287,12 +327,14 @@ export class CharacterManager {
 
     this._thirdCam?.setDialogueMode(true)
 
+    const dialogue = this._resolveDialogue(npc)
+
     document.getElementById('npc-name').textContent = npc.data.displayName
-    document.getElementById('npc-text').textContent = npc.data.dialogue.text
+    document.getElementById('npc-text').textContent = dialogue.text
 
     const optionsEl = document.getElementById('npc-options')
     optionsEl.innerHTML = ''
-    npc.data.dialogue.options.forEach((label, i) => {
+    dialogue.options.forEach((label, i) => {
       const btn = document.createElement('button')
       btn.textContent = `[${i + 1}] ${label}`
       Object.assign(btn.style, {
@@ -360,6 +402,21 @@ export class CharacterManager {
       // Hùng option 1 = "Để tớ giúp tìm lại cho" → spawn donut
       if (activeNPC.data.name === 'Hung' && selectedIdx === 1) {
         this._onDonutQuestAccepted?.()
+      }
+
+      // Đạt option 0 = "Để tớ giúp" → mở minigame2
+      if (activeNPC.data.name === 'Dat' && selectedIdx === 0) {
+        this._onDatQuestAccepted?.()
+      }
+
+      // Khánh: lần đầu → quest tổng; lần cuối (all done) → happy ending
+      if (activeNPC.data.name === 'Khanh' && selectedIdx === 0) {
+        if (!this._khanhTalked) {
+          this._khanhTalked = true
+          this._onKhanhAccepted?.()
+        } else if (this._khanhFinalPhase) {
+          this._onKhanhFinalAccepted?.()
+        }
       }
 
       this._activeNPC = null

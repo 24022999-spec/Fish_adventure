@@ -33,7 +33,6 @@ export class Player {
       if (gltf.animations.length > 0) {
         this._idleAction = this._mixer.clipAction(gltf.animations[0])
         this._idleAction.play()
-        console.log('Playing animation:', gltf.animations[0].name)
       }
     })
 

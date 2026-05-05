@@ -8,7 +8,6 @@ export class SeaFloor {
   constructor(scene) {
     this.scene    = scene
     this._noise   = new SimplexNoise()
-    this._seaweeds = []
     this._createFloor()
     this._createWalls()
   }
@@ -28,9 +27,8 @@ export class SeaFloor {
   }
 
   _createFloor() {
-    const loader        = new GLTFLoader()
-    const textureLoader = new THREE.TextureLoader()
-    const res           = 80  // resolution đủ mịn
+    const loader = new GLTFLoader()
+    const res    = 80  // resolution đủ mịn
 
     const geo = new THREE.PlaneGeometry(
       MAP_SIZE * 2, MAP_SIZE * 2, res, res
@@ -89,17 +87,18 @@ export class SeaFloor {
 
   _createWalls() {
     const textureLoader = new THREE.TextureLoader()
-    const waterTex = textureLoader.load('/assets/textures/water.jpg')
+    const waterTex = textureLoader.load('/wall.jpg')
     waterTex.wrapS = waterTex.wrapT = THREE.RepeatWrapping
-    waterTex.repeat.set(6, 3)
+    waterTex.repeat.set(1, 1)
 
-    const wallH = 35
-    const half  = MAP_SIZE
-    const defs  = [
-      { pos: [0,     SEA_FLOOR_Y + wallH/2, -half], rotY: 0         },
-      { pos: [0,     SEA_FLOOR_Y + wallH/2,  half], rotY: Math.PI   },
-      { pos: [-half, SEA_FLOOR_Y + wallH/2,  0   ], rotY:  Math.PI/2},
-      { pos: [ half, SEA_FLOOR_Y + wallH/2,  0   ], rotY: -Math.PI/2},
+    const wallH   = 45
+    const wallCY  = SEA_FLOOR_Y + wallH / 2 - 18  // dịch xuống để phủ kín đáy
+    const half    = MAP_SIZE
+    const defs    = [
+      { pos: [0,    wallCY, -half], rotY: 0         },
+      { pos: [0,    wallCY,  half], rotY: Math.PI   },
+      { pos: [-half, wallCY, 0   ], rotY:  Math.PI/2},
+      { pos: [ half, wallCY, 0   ], rotY: -Math.PI/2},
     ]
 
     defs.forEach(({ pos, rotY }) => {
@@ -117,9 +116,5 @@ export class SeaFloor {
     })
   }
 
-  update(time) {
-    this._seaweeds.forEach(w => {
-      w.rotation.z = Math.sin(time * w.userData.spd + w.userData.off) * 0.04
-    })
-  }
+  update(_time) {}
 }
