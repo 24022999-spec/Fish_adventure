@@ -67,20 +67,31 @@ export class EndingScreen {
     document.body.appendChild(this._el)
   }
 
+  _typewriter(text, delay = 1200, speed = 70) {
+    this._subtitleEl.textContent = ''
+    clearTimeout(this._typeTimer)
+    const tick = (i) => {
+      if (i >= text.length) return
+      this._subtitleEl.textContent += text.charAt(i)
+      this._typeTimer = setTimeout(() => tick(i + 1), speed)
+    }
+    setTimeout(() => tick(0), delay)
+  }
+
   show(type) {
     if (this._triggered) return
     this._triggered = true
 
     if (type === 'happy') {
-      this._imgEl.src          = assetUrl('/Happy.png')
-      this._titleEl.textContent = '🎉 HAPPY ENDING!'
-      this._titleEl.style.color = '#ffd700'
-      this._subtitleEl.textContent = 'Sinh nhật vui vẻ Khánh ơi!!'
+      this._imgEl.src           = assetUrl('/Happy.png')
+      this._titleEl.textContent  = '🎉 HAPPY ENDING!'
+      this._titleEl.style.color  = '#ffd700'
+      this._typewriter('Sinh nhật vui vẻ Khánh ơi!!')
     } else {
-      this._imgEl.src          = assetUrl('/Sashimi.png')
-      this._titleEl.textContent = 'SASHIMI ENDING...'
-      this._titleEl.style.color = '#ff6b6b'
-      this._subtitleEl.textContent = 'Có những con cá sẽ phải chả cá'
+      this._imgEl.src           = assetUrl('/Sashimi.png')
+      this._titleEl.textContent  = 'SASHIMI ENDING...'
+      this._titleEl.style.color  = '#ff6b6b'
+      this._typewriter('Có những con cá sẽ phải chả cá')
     }
 
     this._el.style.display = 'flex'
