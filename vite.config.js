@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/Darwin-s-adventure/',
+  base: '/Darwin-s_adventure/',
 })
