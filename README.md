@@ -62,7 +62,7 @@ Game đã được cấu hình sẵn để deploy lên GitHub Pages tại:
 https://24022999-spec.github.io/Darwin-s-adventure/
 ```
 
-Để deploy, push code lên nhánh `main` và bật GitHub Pages trong phần **Settings → Pages → Source: GitHub Actions** (hoặc dùng nhánh `gh-pages` tuỳ cấu hình).
+Để deploy, push code lên nhánh `main` và bật GitHub Pages trong phần **Settings → Pages → Source: GitHub Actions**.
 
 ---
 
