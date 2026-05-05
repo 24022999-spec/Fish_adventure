@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { Game } from './Game.js'
 import { assetUrl } from './assetUrl.js'
+import { LoadingScreen } from './LoadingScreen.js'
 
 // ── START SCREEN với background Three.js ──────────────────────
 const container   = document.getElementById('start-canvas-container')
@@ -65,24 +66,23 @@ closeBtn.addEventListener('click', () => {
 
 // ── Nút START ────────────────────────────────────────────────
 startBtn.addEventListener('click', () => {
-  // Transition mượt
   startScreen.style.transition = 'opacity 0.5s'
   startScreen.style.opacity    = '0'
 
   setTimeout(() => {
-    // Dừng background render
     cancelAnimationFrame(bgAnimId)
     bgRenderer.dispose()
-
-    // Ẩn start screen
     startScreen.style.display = 'none'
 
-    // Hiện HUD game
-    document.getElementById('hud').style.display = 'block'
-    document.getElementById('charge-wrap').style.display = 'flex'
-
-    // Khởi động game chính
+    // Hiện loading screen, tạo game (kích hoạt tất cả loader)
+    const loadingScreen = new LoadingScreen()
     const game = new Game()
-    game.start()
+
+    // Khi toàn bộ asset load xong → hiện HUD và bắt đầu game
+    loadingScreen.ready.then(() => {
+      document.getElementById('hud').style.display = 'block'
+      document.getElementById('charge-wrap').style.display = 'flex'
+      game.start()
+    })
   }, 500)
 })

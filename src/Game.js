@@ -81,13 +81,10 @@ export class Game {
     this.thirdCam  = new ThirdPersonCamera(this.camera, this.player.mesh, this.renderer)
     this.seaFloor  = new SeaFloor(this.scene)
     this.player._getTerrainHeight = (x, z) => this.seaFloor.getHeightAt(x, z)
-    this.decorations = null
-    setTimeout(() => {
-      this.decorations = new SeaDecorations(
-        this.scene,
-        (x, z) => this.seaFloor.getHeightAt(x, z)
-      )
-    }, 100)
+    this.decorations = new SeaDecorations(
+      this.scene,
+      (x, z) => this.seaFloor.getHeightAt(x, z)
+    )
     this.collectibles = new CollectibleManager(this.scene)
     this.ui           = new UIManager()
     this.audio        = new AudioManager()
