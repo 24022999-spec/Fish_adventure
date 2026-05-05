@@ -135,10 +135,9 @@ export class QuestGiver {
       ">
         <div style="font-size:13px;color:#0088bb;margin-bottom:7px;font-weight:normal;">Linh</div>
         <div id="quest-text">
-          Chào cậu! Ta cần cậu giúp một việc —
-          hãy vượt qua con đường nguy hiểm phía trước
-          mà không bị cá mập bắt.<br><br>
-          Cậu có dám thử không?
+          Chào Darwin, tớ đã làm rơi chìa khoá nhà ở bên kia rồiii —
+          Cậu giúp tớ lấy lại được không?
+          Tớ cất nem chua của Khánh trong nhà rồi.<br><br>
         </div>
         <div style="
           position:absolute; bottom:-14px; left:50%; transform:translateX(-50%);
@@ -160,8 +159,8 @@ export class QuestGiver {
     optionsEl.innerHTML = ''
 
     const buttons = [
-      { label: '[1] Để sau vậy',      action: () => { this._closeDialogue() } },
-      { label: '[2] Nhận nhiệm vụ! 🐟', action: () => { this._closeDialogue(); this.onQuestAccepted?.() } },
+      { label: '[1] Để sau đi',      action: () => { this._closeDialogue() } },
+      { label: '[2] OK Bro! ', action: () => { this._closeDialogue(); this.onQuestAccepted?.() } },
     ]
 
     buttons.forEach(({ label, action }) => {

@@ -36,11 +36,11 @@ export class EndingScreen {
 
     this._imgEl = document.createElement('img')
     Object.assign(this._imgEl.style, {
-      maxWidth:     '560px',
+      maxWidth:     '700px',
       maxHeight:    '55vh',
       width:        '100%',
       objectFit:    'contain',
-      border:       '4px solid rgba(255,255,255,0.3)',
+      border:       '4px solid rgb(255, 255, 255)',
       borderRadius: '12px',
       marginBottom: '28px',
     })
