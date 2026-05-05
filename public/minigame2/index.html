@@ -11,7 +11,6 @@
 <body>
 
 <div id="vignette"></div>
-
 <!-- Bảng điều khiển bên trái -->
 <div id="left-panel">
   <div class="hud-brand">
@@ -28,7 +27,7 @@
     </div>
     <div class="hud-lives">
       <span class="hud-lives-lbl">LIVES</span>
-      <div class="hud-hearts" id="el-hearts">🐠🐠🐠</div>
+      <div class="hud-hearts" id="el-hearts"><span class="emoji-icon">&#x1F420;</span><span class="emoji-icon">&#x1F420;</span><span class="emoji-icon">&#x1F420;</span></div>
     </div>
     <div class="hud-stat hud-stat-sm">
       <span class="hud-stat-lbl">SPRINKLES</span>
@@ -65,7 +64,7 @@
 <!-- Lớp phủ: nhập tên / bắt đầu / tạm dừng / thua / thắng / mất mạng -->
 <div id="overlay">
   <div class="ov-card" id="ov-card-start" style="display:none">
-    <div class="ov-fish-icon">🐠</div>
+    <div class="ov-fish-icon emoji-icon">&#x1F420;</div>
     <div class="ov-title">FiNN-MAN</div>
     <div class="ov-sub-brand">DEEP SEA MAZE</div>
     <div class="ov-divider"></div>
@@ -83,13 +82,13 @@
   </div>
 
   <div class="ov-card" id="ov-card-pause" style="display:none">
-    <div style="font-size:72px;color:#e5bf62;line-height:1;filter:drop-shadow(0 0 24px rgba(229,191,98,0.7))">⏸</div>
+    <div class="ov-pause-icon">&#x23F8;&#xFE0E;</div>
     <div class="ov-title" style="color:#e5bf62;text-shadow:0 0 28px rgba(229,191,98,0.7);font-size:clamp(28px,4vw,48px)">PAUSED</div>
     <div class="ov-sub">PRESS ESC TO CONTINUE</div>
   </div>
 
   <div class="ov-card" id="ov-card-gameover" style="display:none">
-    <div style="font-size:72px">💀</div>
+    <div class="ov-skull-icon emoji-icon">&#x1F480;</div>
     <div class="ov-title ov-title-danger">GAME OVER</div>
     <div class="ov-divider"></div>
     <div class="ov-start">PRESS ANY MOVE KEY TO RETRY</div>
@@ -98,7 +97,7 @@
   <div class="ov-card" id="ov-card-win" style="display:none">
     <div class="win-donut-wrap">
       <canvas id="win-donut-canvas" width="240" height="240"></canvas>
-      <div class="win-donut-fallback">🍩</div>
+      <div class="win-donut-fallback emoji-icon">&#x1F369;</div>
     </div>
     <div class="ov-title ov-title-gold" style="font-size:clamp(28px,4.5vw,52px)">YOU WIN!</div>
     <div class="ov-sub-brand" style="font-size:13px;letter-spacing:2px">★ PRESENT FOUND ★</div>
@@ -106,7 +105,7 @@
   </div>
 
   <div class="ov-card" id="ov-card-life-lost" style="display:none">
-    <div class="life-skull">💀</div>
+    <div class="life-skull emoji-icon">&#x1F480;</div>
     <div class="ov-title ov-title-danger">YOU DIED</div>
     <div class="life-lost-lives-wrap">
       <div class="life-lost-lbl">LIVES REMAINING</div>

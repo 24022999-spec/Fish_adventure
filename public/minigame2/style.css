@@ -15,6 +15,10 @@
 * { box-sizing:border-box; margin:0; padding:0; }
 html,body { width:100%; height:100%; overflow:hidden; background:var(--dark); }
 body { font-family:"Press Start 2P",monospace; display:flex; flex-direction:row; overflow:hidden; align-items:stretch; }
+.emoji-icon { font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif; letter-spacing:0; line-height:1; font-weight:400; }
+.hud-hearts .emoji-icon, .life-lost-hearts .emoji-icon { display:inline-block; filter:drop-shadow(0 0 8px rgba(78,205,196,0.55)); }
+.ov-pause-icon { font-size:72px;color:#e5bf62;line-height:1;filter:drop-shadow(0 0 24px rgba(229,191,98,0.7)); }
+.ov-skull-icon { font-size:72px;line-height:1; }
 
 /* BẢNG ĐIỀU KHIỂN BÊN TRÁI */
 #left-panel {
@@ -496,3 +500,5 @@ body { font-family:"Press Start 2P",monospace; display:flex; flex-direction:row;
   .hud-hearts { font-size: 14px; }
   .ov-card { padding:36px 28px; min-width:280px; }
 }
+
+

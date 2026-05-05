@@ -136,7 +136,3 @@ const water2=new THREE.Mesh(new THREE.PlaneGeometry(COLS*TILE+8000,NROW*TILE+800
 water2.rotation.x=-Math.PI/2;
 water2.position.set(BOARD_CX,260,BOARD_CZ);
 scene.add(water2);
-
-
-
-

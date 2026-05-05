@@ -40,6 +40,7 @@ const DIR_KEYS=Object.keys(DIRS);
 const OPPOSITE={left:"right",right:"left",up:"down",down:"up"};
 
 let wonGame=false;
+let gameEnded=false;
 let donutsLeft=4; // 4 power pellet trên bản đồ
 let donutsEaten=0; // số donut đã ăn
 let sprinklesTotal=0;
@@ -57,4 +58,3 @@ function atCentre(e){const c=tileToWorld(e.tile.x,e.tile.y);return Math.abs(e.x-
 function snapToTile(e){const c=tileToWorld(e.tile.x,e.tile.y);e.x=c.x;e.y=c.y;}
 function syncTile(e){const t=worldToTile(e.x,e.y);e.tile.x=t.x;e.tile.y=t.y;}
 function wrapX(e){const mw=COLS*TILE;if(e.x<-TILE/2)e.x=mw+TILE/2;if(e.x>mw+TILE/2)e.x=-TILE/2;}
-

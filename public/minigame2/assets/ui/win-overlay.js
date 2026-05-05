@@ -52,7 +52,7 @@
 
   const loader = new THREE.GLTFLoader();
   loader.load(
-    'donut/Present.glb',
+    'glb_model_file/Present.glb',
     function(gltf) {
       const model = gltf.scene;
       model.traverse(m => {
@@ -116,4 +116,3 @@
   }
   requestAnimationFrame(render);
 })();
-

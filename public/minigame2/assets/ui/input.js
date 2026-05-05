@@ -1,23 +1,20 @@
 // Xử lý input.
 let tabHidden=false;
 const KEY_DIR={ArrowLeft:"left",ArrowRight:"right",ArrowUp:"up",ArrowDown:"down"};
+
 window.addEventListener("keydown",e=>{
+  if(gameEnded && !started){
+    e.preventDefault();
+    window.parent?.postMessage({type: wonGame ? "MINIGAME_WIN" : "MINIGAME_EXIT"},"*");
+    return;
+  }
+
   if(e.key.toLowerCase()==="s"){
     e.preventDefault();
     skipToWin();
     return;
   }
-  // Màn hình thắng: cho phép bấm phím bất kỳ để tiếp tục/chơi lại.
-  if(wonGame && !started && e.key!=="Escape"){
-    wonGame=false; initGame(true); init3DGhosts();
-    started=true;paused=false;
-    accumulatedMs=0;
-    frozenTimeMs=-1;
-    gameStartTime=performance.now();
-    if(elTime) elTime.textContent="00:00";
-    hideOv();
-    return;
-  }
+
   if(e.key==="Escape"){
     if(waitingForInput)return;
     paused=!paused;
@@ -25,6 +22,7 @@ window.addEventListener("keydown",e=>{
     else { resumeTimer(); hideOv(); }
     return;
   }
+
   const d=KEY_DIR[e.key];
   if(d){
     e.preventDefault();
@@ -38,7 +36,7 @@ window.addEventListener("keydown",e=>{
     }
     player.nextDir=d;
     if(!started){
-      // Khởi động lại hoàn toàn sau khi game over hoặc thắng.
+      // Khởi động lại hoàn toàn khi chưa vào ván.
       if(wonGame){ wonGame=false; initGame(true); init3DGhosts(); }
       started=true;paused=false;
       accumulatedMs=0;
@@ -49,7 +47,9 @@ window.addEventListener("keydown",e=>{
     }
   }
 });
+
 document.addEventListener("visibilitychange",()=>{if(document.hidden)tabHidden=true;});
+
 window.addEventListener("resize",()=>{
   const area=document.getElementById("game-area");
   let rw,rh;

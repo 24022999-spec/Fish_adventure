@@ -46,4 +46,3 @@ const MODE_SCHEDULE=[
   ["scatter",5000],["chase",Infinity],
 ];
 let modeIdx=0, modeTick=0;
-

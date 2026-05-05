@@ -134,4 +134,3 @@ function decideNextDir(g,now){
 
   return (d&&validChoices.includes(d))?d:validChoices[Math.floor(Math.random()*validChoices.length)];
 }
-

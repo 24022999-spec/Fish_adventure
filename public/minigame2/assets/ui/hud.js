@@ -1,4 +1,4 @@
-// Giao diện HUD.
+﻿// Giao diá»‡n HUD.
 const elHearts=document.getElementById("el-hearts");
 const elTime=document.getElementById("el-time");
 const ovEl=document.getElementById("overlay");
@@ -11,14 +11,14 @@ const cards={
 };
 
 function updateHUD(){
-  // Hiển thị mạng.
+  // Hiá»ƒn thá»‹ máº¡ng.
   if(elHearts){
     let h="";
-    for(let i=0;i<lives;i++) h+="🐠";
-    for(let i=lives;i<3;i++) h+="<span style='opacity:.2'>🐠</span>";
+    for(let i=0;i<lives;i++) h+="<span class='emoji-icon'>&#x1F420;</span>";
+    for(let i=lives;i<3;i++) h+="<span class='emoji-icon' style='opacity:.2'>&#x1F420;</span>";
     elHearts.innerHTML=h;
   }
-  // Hiển thị sprinkles.
+  // Hiá»ƒn thá»‹ sprinkles.
   const elSprinkleCount=document.getElementById("el-sprinkle-count");
   const elSprinkleTotal=document.getElementById("el-sprinkle-total");
   if(elSprinkleTotal) elSprinkleTotal.textContent=sprinklesTotal;
@@ -31,7 +31,7 @@ function updateHUD(){
       elSprinkleCount.classList.add("pop-anim");
     }
   }
-  // Hiển thị donut.
+  // Hiá»ƒn thá»‹ donut.
   const elDonutCount=document.getElementById("el-donut-count");
   const elDonutIcons=document.getElementById("el-donut-icons");
   if(elDonutCount){
@@ -63,7 +63,7 @@ function updateHUD(){
 
 let pausedAt=0;
 let accumulatedMs=0;
-let frozenTimeMs=-1; // >=0 thì khóa hiển thị timer tại giá trị này
+let frozenTimeMs=-1; // >=0 thÃ¬ khÃ³a hiá»ƒn thá»‹ timer táº¡i giÃ¡ trá»‹ nÃ y
 
 function updateTimer(){
   if(!elTime) return;
@@ -102,8 +102,8 @@ function showCard(name){
       const heartsEl=document.getElementById("life-lost-hearts");
       if(heartsEl){
         heartsEl.innerHTML="";
-        for(let i=0;i<lives;i++) heartsEl.innerHTML+="🐠";
-        for(let i=lives;i<3;i++) heartsEl.innerHTML+="<span style='opacity:.25'>🐠</span>";
+        for(let i=0;i<lives;i++) heartsEl.innerHTML+="<span class='emoji-icon'>&#x1F420;</span>";
+        for(let i=lives;i<3;i++) heartsEl.innerHTML+="<span class='emoji-icon' style='opacity:.25'>&#x1F420;</span>";
       }
     }
     ovEl.classList.remove("hidden");
@@ -115,10 +115,14 @@ function showCard(name){
   ovEl.classList.remove("hidden");
 }
 function hideOv(){ovEl.classList.add("hidden");}
-function skipToWin(){
+function finishWin(){
   started=false;
   paused=true;
   wonGame=true;
+  gameEnded=true;
   showCard("win");
+}
+function skipToWin(){
+  finishWin();
 }
 

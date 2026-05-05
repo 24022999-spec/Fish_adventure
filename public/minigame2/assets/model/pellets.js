@@ -1,35 +1,35 @@
-// Pellet: dùng InstancedMesh để gom thành ít lệnh vẽ.
+﻿// Pellet: dÃ¹ng InstancedMesh Ä‘á»ƒ gom thÃ nh Ã­t lá»‡nh váº½.
 const pelletMeshes=new Map();
 let donutGLBModel = null;
 let donutGLBBox = null;
 
-// Sprinkle: CylinderGeometry dạng thanh nhỏ dài, dùng nhiều màu nổi.
+// Sprinkle: CylinderGeometry dáº¡ng thanh nhá» dÃ i, dÃ¹ng nhiá»u mÃ u ná»•i.
 const SPRINKLE_COLORS=[0xffdd00,0xff4444,0x44ccff,0xffffff,0xff88cc];
 const SPRINKLE_MATS=SPRINKLE_COLORS.map(c=>new THREE.MeshBasicMaterial({color:c}));
-// Thanh sprinkle giữ bề dày nhỏ và độ dài vừa phải để nhìn nhẹ hơn.
-const SPRINKLE_GEO=new THREE.CylinderGeometry(1.5,1.5,12,6); // thanh ngắn
+// Thanh sprinkle giá»¯ bá» dÃ y nhá» vÃ  Ä‘á»™ dÃ i vá»«a pháº£i Ä‘á»ƒ nhÃ¬n nháº¹ hÆ¡n.
+const SPRINKLE_GEO=new THREE.CylinderGeometry(1.5,1.5,12,6); // thanh ngáº¯n
 
-// Pellet sức mạnh: 1/4 torus nằm phẳng, mỗi vị trí dùng một góc xoay.
-// Đếm dot và power pellet trước.
+// Pellet sá»©c máº¡nh: 1/4 torus náº±m pháº³ng, má»—i vá»‹ trÃ­ dÃ¹ng má»™t gÃ³c xoay.
+// Äáº¿m dot vÃ  power pellet trÆ°á»›c.
 let totalDots=0, totalPowers=0;
 for(let r=0;r<NROW;r++) for(let c=0;c<COLS;c++){if(ROWS[r][c]===".")totalDots++;else if(ROWS[r][c]==="o")totalPowers++;}
 
-// Mỗi màu sprinkle dùng một InstancedMesh.
+// Má»—i mÃ u sprinkle dÃ¹ng má»™t InstancedMesh.
 const dotInstancedArr=SPRINKLE_MATS.map(m=>new THREE.InstancedMesh(SPRINKLE_GEO,m,Math.ceil(totalDots/SPRINKLE_COLORS.length)+10));
 dotInstancedArr.forEach(m=>{m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);m.renderOrder=1;scene.add(m);});
 
-// Pellet sức mạnh: 4 mảnh torus tách nhau, có khe rõ ở giữa.
+// Pellet sá»©c máº¡nh: 4 máº£nh torus tÃ¡ch nhau, cÃ³ khe rÃµ á»Ÿ giá»¯a.
 const donutGroups=new Map();
 
-// Donut ít đa giác: tô phẳng và dùng màu đỉnh theo các tông nâu chocolate.
+// Donut Ã­t Ä‘a giÃ¡c: tÃ´ pháº³ng vÃ  dÃ¹ng mÃ u Ä‘á»‰nh theo cÃ¡c tÃ´ng nÃ¢u chocolate.
 const DONUT_BROWNS=[
-  new THREE.Color(0x5c3317), // nâu đậm
-  new THREE.Color(0x7b4a22), // nâu trung
-  new THREE.Color(0x8b5a2b), // nâu caramel
-  new THREE.Color(0x9b6a35), // nâu sáng
-  new THREE.Color(0x6b3d1e), // nâu đỏ
-  new THREE.Color(0x4a2810), // nâu rất đậm
-  new THREE.Color(0xa07040), // nâu vàng
+  new THREE.Color(0x5c3317), // nÃ¢u Ä‘áº­m
+  new THREE.Color(0x7b4a22), // nÃ¢u trung
+  new THREE.Color(0x8b5a2b), // nÃ¢u caramel
+  new THREE.Color(0x9b6a35), // nÃ¢u sÃ¡ng
+  new THREE.Color(0x6b3d1e), // nÃ¢u Ä‘á»
+  new THREE.Color(0x4a2810), // nÃ¢u ráº¥t Ä‘áº­m
+  new THREE.Color(0xa07040), // nÃ¢u vÃ ng
 ];
 
 function makeDonutSegment(startAngle){
@@ -37,7 +37,7 @@ function makeDonutSegment(startAngle){
   const r = TILE * 0.17;
   const GAP = 0.28;
   const ARC = Math.PI/2 - GAP;
-  // Low-poly: dùng rất ít segment.
+  // Low-poly: dÃ¹ng ráº¥t Ã­t segment.
   const arcSegs = 5, tubeSegs = 5;
 
   const midAngle = startAngle + Math.PI/4;
@@ -49,14 +49,14 @@ function makeDonutSegment(startAngle){
   const arc = new THREE.CatmullRomCurve3(pts);
   const geo = new THREE.TubeGeometry(arc, arcSegs, r, tubeSegs, false);
 
-  // Tô phẳng: mỗi mặt dùng một màu nâu khác nhau qua màu đỉnh.
-  // Chuyển sang dạng không dùng chỉ số để mỗi tam giác độc lập.
+  // TÃ´ pháº³ng: má»—i máº·t dÃ¹ng má»™t mÃ u nÃ¢u khÃ¡c nhau qua mÃ u Ä‘á»‰nh.
+  // Chuyá»ƒn sang dáº¡ng khÃ´ng dÃ¹ng chá»‰ sá»‘ Ä‘á»ƒ má»—i tam giÃ¡c Ä‘á»™c láº­p.
   const nonIdx = geo.toNonIndexed();
   nonIdx.computeVertexNormals();
 
   const count = nonIdx.attributes.position.count;
   const colors = new Float32Array(count * 3);
-  // Mỗi tam giác gồm 3 vertex liên tiếp, gán cùng màu cho cả 3.
+  // Má»—i tam giÃ¡c gá»“m 3 vertex liÃªn tiáº¿p, gÃ¡n cÃ¹ng mÃ u cho cáº£ 3.
   for(let i = 0; i < count; i += 3){
     const col = DONUT_BROWNS[Math.floor(i/3) % DONUT_BROWNS.length];
     colors[i*3]   = col.r; colors[i*3+1]   = col.g; colors[i*3+2]   = col.b;
@@ -65,7 +65,7 @@ function makeDonutSegment(startAngle){
   }
   nonIdx.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-  // Đưa về tâm tile.
+  // ÄÆ°a vá» tÃ¢m tile.
   const midX = Math.cos(midAngle) * R;
   const midZ = Math.sin(midAngle) * R;
   nonIdx.translate(-midX, 0, -midZ);
@@ -81,7 +81,7 @@ function makeDonutSegment(startAngle){
   return mesh;
 }
 
-// Mỗi piece chỉ hiện một mảnh (pieceIdx 0-3), khe rõ ràng.
+// Má»—i piece chá»‰ hiá»‡n má»™t máº£nh (pieceIdx 0-3), khe rÃµ rÃ ng.
 function buildDonutMesh(cx, cz, key, pieceIdx){
   const pivot = new THREE.Group();
   if(donutGLBModel && donutGLBBox){
@@ -105,19 +105,19 @@ function buildDonutMesh(cx, cz, key, pieceIdx){
     pivot.add(makeDonutSegment(pieceIdx * Math.PI/2));
   }
   pivot.rotation.set(Math.PI, 0, Math.PI);
-  // Căn đúng tâm tile, y=6 giống sprinkle.
+  // CÄƒn Ä‘Ãºng tÃ¢m tile, y=6 giá»‘ng sprinkle.
   pivot.position.set(cx, 6, cz);
   pivot.renderOrder = 1;
   scene.add(pivot);
   donutGroups.set(key, {group:pivot, baseX:cx, baseZ:cz});
 }
 
-// Theo dõi số lượng theo từng màu.
+// Theo dÃµi sá»‘ lÆ°á»£ng theo tá»«ng mÃ u.
 let donutPieceCounter=0;
 function buildPellets3D(){
   pelletMeshes.clear();
   donutPieceCounter=0;
-  // Xóa các group donut cũ.
+  // XÃ³a cÃ¡c group donut cÅ©.
   donutGroups.forEach(({group})=>scene.remove(group));
   donutGroups.clear();
 
@@ -151,9 +151,9 @@ function buildPellets3D(){
 }
 buildPellets3D();
 
-// Tải trước Donut.glb, dựng lại pellet trên bản đồ và khởi tạo renderer cho panel.
+// Táº£i trÆ°á»›c Donut.glb, dá»±ng láº¡i pellet trÃªn báº£n Ä‘á»“ vÃ  khá»Ÿi táº¡o renderer cho panel.
 (function(){
-  const DONUT_PATH = 'donut/Donut.glb';
+  const DONUT_PATH = 'glb_model_file/Donut.glb';
   const gltfLoader = new THREE.GLTFLoader();
   gltfLoader.load(DONUT_PATH, function(gltf){
     const model = gltf.scene;
@@ -163,10 +163,10 @@ buildPellets3D();
     donutGLBModel = model;
     donutGLBBox   = box;
 
-    // Dựng lại pellet khi GLB đã sẵn sàng.
+    // Dá»±ng láº¡i pellet khi GLB Ä‘Ã£ sáºµn sÃ ng.
     buildPellets3D();
 
-    // Khởi tạo 4 renderer nhỏ trong panel.
+    // Khá»Ÿi táº¡o 4 renderer nhá» trong panel.
     initDonutPanelRenderers(model, box);
   }, undefined, function(err){
     console.warn('Donut.glb load failed, using fallback segments:', err);
@@ -234,7 +234,7 @@ function removePellet3D(col,row){
   const p=pelletMeshes.get(k);
   if(p){
     if(p.isPower){
-      // Ẩn group donut GLB.
+      // áº¨n group donut GLB.
       const dg=donutGroups.get(k);
       if(dg) dg.group.visible=false;
     } else if(p.mesh){
@@ -244,4 +244,3 @@ function removePellet3D(col,row){
     pelletMeshes.delete(k);
   }
 }
-

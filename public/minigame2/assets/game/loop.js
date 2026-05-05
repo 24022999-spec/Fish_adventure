@@ -122,4 +122,3 @@ function animate(ts){
 
   renderer.render(scene,camera);
 }
-

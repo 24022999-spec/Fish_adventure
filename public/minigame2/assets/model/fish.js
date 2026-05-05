@@ -163,4 +163,3 @@ function makeGhostFish(name){
   };
   return g;
 }
-

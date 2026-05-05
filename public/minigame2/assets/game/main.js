@@ -7,4 +7,3 @@ requestAnimationFrame(()=>{
   window.dispatchEvent(new Event('resize'));
   requestAnimationFrame(animate);
 });
-

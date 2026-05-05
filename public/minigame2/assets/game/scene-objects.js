@@ -29,4 +29,3 @@ for(let i=0;i<NUM_BUBBLES;i++){
 bubbleGeo.setAttribute("position",new THREE.BufferAttribute(bPos,3));
 const bubbleMat=new THREE.PointsMaterial({color:0x80f0e0,size:3.5,transparent:true,opacity:0.55,sizeAttenuation:true});
 const bubbles=new THREE.Points(bubbleGeo,bubbleMat);
-

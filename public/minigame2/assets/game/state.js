@@ -1,6 +1,7 @@
 ﻿function initGame(full=true){
   map=buildMap();pellets=countDots();frightenedUntil=0;
   modeIdx=0;modeTick=0;
+  gameEnded=false;
   donutsLeft=4; donutsEaten=0;
   sprinklesTotal=countSprinkles();
   sprinklesEaten=0;
@@ -32,7 +33,7 @@ function eatTile(){
   const t=map[y][x];
   if(t==="."){map[y][x]=" ";pellets--;sprinklesEaten++;removePellet3D(x,y);}
   else if(t==="o"){map[y][x]=" ";pellets--;donutsLeft=Math.max(0,donutsLeft-1);donutsEaten=Math.min(4,donutsEaten+1);frightenedUntil=performance.now()+POWER_MS;removePellet3D(x,y);}
-  if(t==="."||t==="o"){updateHUD();if(pellets===0){started=false;paused=true;wonGame=true;window.parent.postMessage({type:'MINIGAME_WIN'},'*');}}
+  if(t==="."||t==="o"){updateHUD();if(pellets===0){finishWin();}}
 }
 
 function updateGhosts(dt,now){
@@ -137,6 +138,7 @@ function loseLife(){
     const finalStartTime=gameStartTime;
     initGame(); // reset điểm/mạng/cấp, nhưng giữ gameStartTime theo xử lý bên dưới
     gameStartTime=finalStartTime;
+    gameEnded=true;
     showCard("gameover");
     // Không reset gameStartTime ở đây để tiếp tục hiện thời gian cũ cho đến khi chơi lại.
     return;
