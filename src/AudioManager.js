@@ -1,3 +1,5 @@
+import { assetUrl } from './assetUrl.js'
+
 export class AudioManager {
   constructor() {
     this._ctx           = null
@@ -5,13 +7,13 @@ export class AudioManager {
     this._collectGain   = 0.5
 
     // BGM dùng HTML Audio (streaming, loop dài)
-    this._bgm         = new Audio('/assets/sounds/bgm.mp3')
+    this._bgm         = new Audio(assetUrl('/assets/sounds/bgm.mp3'))
     this._bgm.loop    = true
     this._bgm.volume  = 0.3
     this._bgm.preload = 'auto'
     this._bgm.load()
 
-    this._bubbles         = new Audio('/assets/sounds/bubbles.mp3')
+    this._bubbles         = new Audio(assetUrl('/assets/sounds/bubbles.mp3'))
     this._bubbles.volume  = 0.5
     this._bubbles.preload = 'auto'
     this._bubbles.load()
@@ -29,7 +31,7 @@ export class AudioManager {
   }
 
   _loadCollectBuffer() {
-    fetch('/assets/sounds/collect.mp3')
+    fetch(assetUrl('/assets/sounds/collect.mp3'))
       .then(r  => r.arrayBuffer())
       .then(ab => this._ctx.decodeAudioData(ab))
       .then(buf => { this._collectBuffer = buf })

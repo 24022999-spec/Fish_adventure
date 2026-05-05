@@ -8,7 +8,7 @@ export const sharksData = [];
 // Hàm khởi tạo và tải model Shark
 export function loadSharkModel(loader) {
     return new Promise((resolve) => {
-        loader.load('/minigame1/Shark.glb', (gltf) => {
+        loader.load('../Shark.glb', (gltf) => {
             sharkAnimations.splice(0, sharkAnimations.length, ...(gltf.animations || []));
 
             gltf.scene.traverse((child) => {

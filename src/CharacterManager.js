@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { assetUrl } from './assetUrl.js'
 
 const INTERACT_RADIUS = 5.0
 
@@ -129,7 +130,7 @@ export class CharacterManager {
 
   _loadCharacter(data) {
     this._loader.load(
-      data.file,
+      assetUrl(data.file),
       (gltf) => {
         const model = gltf.scene
         model.name  = data.name

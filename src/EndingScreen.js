@@ -1,6 +1,8 @@
 // Đăng ký font PixelViet một lần
+import { assetUrl } from './assetUrl.js'
+
 const _style = document.createElement('style')
-_style.textContent = `@font-face{font-family:'PixelViet';src:url('/PixelViet.ttf') format('truetype');}`
+_style.textContent = `@font-face{font-family:'PixelViet';src:url('${assetUrl('/PixelViet.ttf')}') format('truetype');}`
 document.head.appendChild(_style)
 
 export class EndingScreen {
@@ -70,12 +72,12 @@ export class EndingScreen {
     this._triggered = true
 
     if (type === 'happy') {
-      this._imgEl.src          = '/Happy.png'
+      this._imgEl.src          = assetUrl('/Happy.png')
       this._titleEl.textContent = '🎉 HAPPY ENDING!'
       this._titleEl.style.color = '#ffd700'
       this._subtitleEl.textContent = 'Sinh nhật vui vẻ Khánh ơi!!'
     } else {
-      this._imgEl.src          = '/Sashimi.png'
+      this._imgEl.src          = assetUrl('/Sashimi.png')
       this._titleEl.textContent = 'SASHIMI ENDING...'
       this._titleEl.style.color = '#ff6b6b'
       this._subtitleEl.textContent = 'Có những con cá sẽ phải chả cá'

@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { MOVE_SPEED, MAP_SIZE, SEA_FLOOR_Y, COLORS } from './constants.js'
 import { clamp } from './utils.js'
+import { assetUrl } from './assetUrl.js'
 
 export class Player {
   constructor(scene) {
@@ -19,7 +20,7 @@ export class Player {
     this._clock      = new THREE.Clock()
 
     const loader = new GLTFLoader()
-    loader.load('/assets/models/stylized_fish_model.glb', (gltf) => {
+    loader.load(assetUrl('/assets/models/stylized_fish_model.glb'), (gltf) => {
       const model = gltf.scene
       model.scale.setScalar(5.0)
       model.traverse(c => {

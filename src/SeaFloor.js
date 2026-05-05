@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js'
 import { MAP_SIZE, SEA_FLOOR_Y, COLORS } from './constants.js'
 import { randFloat } from './utils.js'
+import { assetUrl } from './assetUrl.js'
 
 export class SeaFloor {
   constructor(scene) {
@@ -45,7 +46,7 @@ export class SeaFloor {
     geo.computeVertexNormals()
 
     // Load sand material
-    loader.load('/assets/models/sand_material.glb', (gltf) => {
+    loader.load(assetUrl('/assets/models/sand_material.glb'), (gltf) => {
       let sandMat = null
       gltf.scene.traverse(c => {
         if (c.isMesh && c.material && !sandMat) {
@@ -87,7 +88,7 @@ export class SeaFloor {
 
   _createWalls() {
     const textureLoader = new THREE.TextureLoader()
-    const waterTex = textureLoader.load('/wall.jpg')
+    const waterTex = textureLoader.load(assetUrl('/wall.jpg'))
     waterTex.wrapS = waterTex.wrapT = THREE.RepeatWrapping
     waterTex.repeat.set(1, 1)
 

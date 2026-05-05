@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { assetUrl } from './assetUrl.js'
 
 // ================================================================
 // MiniGameManager — Generic iframe overlay cho mọi minigame
@@ -135,10 +136,10 @@ export class MiniGameManager {
 
     this._pauseMainBgm?.()
 
-    this._iframe.src = this._url
+    this._iframe.src = assetUrl(this._url)
 
     if (!this._bgm) {
-      this._bgm = new Audio(this._bgmUrl)
+      this._bgm = new Audio(assetUrl(this._bgmUrl))
       this._bgm.loop = true
     }
     this._bgm.currentTime = 0

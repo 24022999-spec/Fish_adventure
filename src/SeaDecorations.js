@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { assetUrl } from './assetUrl.js'
 import { SEA_FLOOR_Y, MAP_SIZE } from './constants.js'
 
 export class SeaDecorations {
@@ -63,7 +64,7 @@ export class SeaDecorations {
     const loader = new GLTFLoader()
 
     loader.load(
-      '/assets/models/decorations/map.glb',
+      assetUrl('/assets/models/decorations/map.glb'),
 
       // onLoad
       (gltf) => {

@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { assetUrl } from './assetUrl.js'
 
 // ================================================================
 // QuestGiver — Nhân vật sad đứng dưới đáy biển
@@ -34,7 +35,7 @@ export class QuestGiver {
   // — Load model Linh ——————————————————————————————————————
   _createMesh() {
     const loader = new GLTFLoader()
-    loader.load('/assets/models/decorations/sea_creatures/quest_giver.glb', (gltf) => {
+    loader.load(assetUrl('/assets/models/decorations/sea_creatures/quest_giver.glb'), (gltf) => {
       this._mesh = gltf.scene
       this._mesh.scale.setScalar(0.010)
       this._mesh.position.copy(this.position)

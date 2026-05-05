@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { COLLECT_DIST, DONUT_COUNT, MAP_SIZE } from './constants.js'
 import { randFloat } from './utils.js'
+import { assetUrl } from './assetUrl.js'
 
 export class CollectibleManager {
   constructor(scene) {
@@ -14,7 +15,7 @@ export class CollectibleManager {
 
     // Preload model sẵn, chưa spawn
     const loader = new GLTFLoader()
-    loader.load('/assets/models/donut.glb',
+    loader.load(assetUrl('/assets/models/donut.glb'),
       (gltf) => {
         this._loadedTemplate = gltf.scene
         if (this._pendingSpawn) this._populateDonuts()

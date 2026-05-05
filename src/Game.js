@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { RGBELoader }        from 'three/examples/jsm/loaders/RGBELoader.js'
 import { GLTFLoader }        from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { assetUrl }          from './assetUrl.js'
 import { ThirdPersonCamera } from './ThirdPersonCamera.js'
 import { Player }            from './Player.js'
 import { InputManager }      from './InputManager.js'
@@ -40,7 +41,7 @@ export class Game {
     // --- HDR Skybox ---
     this._hdrTexture = null
     const rgbeLoader = new RGBELoader()
-    rgbeLoader.load('/assets/textures/sky.hdr', (hdrTexture) => {
+    rgbeLoader.load(assetUrl('/assets/textures/sky.hdr'), (hdrTexture) => {
       hdrTexture.mapping      = THREE.EquirectangularReflectionMapping
       this._hdrTexture        = hdrTexture
       this.scene.background   = hdrTexture
@@ -136,7 +137,7 @@ export class Game {
     )
 
     // --- TugBoatWithNet ---
-    new GLTFLoader().load('/assets/models/decorations/sea_creatures/TugBoatWithNet.glb', (gltf) => {
+    new GLTFLoader().load(assetUrl('/assets/models/decorations/sea_creatures/TugBoatWithNet.glb'), (gltf) => {
       const boat = gltf.scene
       boat.position.set(15.8, 3.5, 24.7)
       boat.scale.setScalar(2.5)
@@ -164,7 +165,7 @@ export class Game {
   }
 
   _createWaterSurface() {
-    const waterTex = new THREE.TextureLoader().load('/assets/textures/water.jpg')
+    const waterTex = new THREE.TextureLoader().load(assetUrl('/assets/textures/water.jpg'))
     waterTex.wrapS = waterTex.wrapT = THREE.RepeatWrapping
     waterTex.repeat.set(30, 30)
 

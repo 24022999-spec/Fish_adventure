@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { Game } from './Game.js'
+import { assetUrl } from './assetUrl.js'
 
 // ── START SCREEN với background Three.js ──────────────────────
 const container   = document.getElementById('start-canvas-container')
@@ -21,7 +22,7 @@ bgRenderer.setSize(window.innerWidth, window.innerHeight)
 container.appendChild(bgRenderer.domElement)
 
 const texLoader = new THREE.TextureLoader()
-const bgTex     = texLoader.load('/start-screen.png')
+const bgTex     = texLoader.load(assetUrl('/start-screen.png'))
 bgTex.colorSpace = THREE.SRGBColorSpace
 
 const dist      = 10
