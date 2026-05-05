@@ -72,4 +72,26 @@ export class AudioManager {
     this._bubbles.currentTime = 0
     this._bubbles.play().catch(() => {})
   }
+
+  playHappy() {
+    this.stopBGM()
+    if (!this._happy) {
+      this._happy         = new Audio(assetUrl('/assets/sounds/happy.mp3'))
+      this._happy.volume  = 0.6
+      this._happy.preload = 'auto'
+    }
+    this._happy.currentTime = 0
+    this._happy.play().catch(() => {})
+  }
+
+  playSashimi() {
+    this.stopBGM()
+    if (!this._sashimi) {
+      this._sashimi         = new Audio(assetUrl('/assets/sounds/sashimi.mp3'))
+      this._sashimi.volume  = 0.6
+      this._sashimi.preload = 'auto'
+    }
+    this._sashimi.currentTime = 0
+    this._sashimi.play().catch(() => {})
+  }
 }

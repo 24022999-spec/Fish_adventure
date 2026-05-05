@@ -133,7 +133,7 @@ export class Game {
       () => this.mainQuestPanel.onKhanhAccepted(),
       () => this.mainQuestPanel.completeTask('spongebob'),
       () => this.mainQuestPanel.allDone,
-      () => { this._endingTriggered = true; this.mainQuestPanel.hideKhanhHint(); this.endingScreen.show('happy') },
+      () => { this._endingTriggered = true; this.mainQuestPanel.hideKhanhHint(); this.audio.playHappy(); this.endingScreen.show('happy') },
     )
 
     // --- TugBoatWithNet ---
@@ -302,6 +302,7 @@ export class Game {
       const dx = pp.x - 15.8, dy = pp.y - 3.5, dz = pp.z - 24.7
       if (dx * dx + dy * dy + dz * dz < 9) {
         this._endingTriggered = true
+        this.audio.playSashimi()
         this.endingScreen.show('sashimi')
       }
     }
