@@ -1,94 +1,101 @@
-# 🐟 Darwin's Adventure
+# Darwin's Adventure
 
-Game khám phá đại dương 3D được xây dựng bằng Three.js và Vite.
+Game khám phá đại dương 3D được xây dựng bằng **Three.js** và **Vite**. Người chơi hóa thân thành chú cá Darwin, bơi lội dưới đáy biển, nói chuyện với các NPC và hoàn thành nhiệm vụ để tham dự tiệc sinh nhật của Khánh.
 
----
-
-## Yêu cầu hệ thống
-
-- [Node.js](https://nodejs.org/) phiên bản **18** trở lên
-- npm (đi kèm với Node.js)
+**Play:** https://24022999-spec.github.io/Darwin-s_adventure/
 
 ---
 
-## Cài đặt
+## Công nghệ
 
-**1. Clone repository**
+| | |
+|---|---|
+| Render | [Three.js](https://threejs.org/) r176 |
+| Build tool | [Vite](https://vitejs.dev/) v8 |
+| Ngôn ngữ | JavaScript (ES Modules) |
+| Deploy | GitHub Pages + GitHub Actions |
+| Asset lớn | Git LFS (`map.glb` 241 MB) |
+
+---
+
+## Cài đặt & chạy local
+
+**Yêu cầu:** Node.js ≥ 18, npm, git-lfs
 
 ```bash
-git clone https://github.com/24022999-spec/Darwin-s-adventure.git
-cd Darwin-s-adventure
-```
+# Clone (bao gồm LFS files)
+git clone https://github.com/24022999-spec/Darwin-s_adventure.git
+cd Darwin-s_adventure
+git lfs pull
 
-**2. Cài đặt dependencies**
-
-```bash
+# Cài dependencies
 npm install
-```
 
----
-
-## Chạy ở môi trường Development
-
-```bash
+# Dev server
 npm run dev
+# → http://localhost:5173
 ```
 
-Mở trình duyệt và truy cập: `http://localhost:5173`
-
----
-
-## Build để deploy
-
 ```bash
+# Build production
 npm run build
-```
 
-File build sẽ được xuất ra thư mục `dist/`.
-
-**Xem trước bản build:**
-
-```bash
+# Xem trước bản build
 npm run preview
 ```
 
 ---
 
-## Deploy lên GitHub Pages
+## Deploy
 
-Game đã được cấu hình sẵn để deploy lên GitHub Pages tại:
+Push lên nhánh `main` → GitHub Actions tự động build và deploy lên GitHub Pages.
 
-https://24022999-spec.github.io/Darwin-s_adventure/
-
-Để deploy, push code lên nhánh `main` và bật GitHub Pages trong phần **Settings → Pages → Source: GitHub Actions**.
+Yêu cầu GitHub Pages phải được cấu hình: **Settings → Pages → Source: GitHub Actions**
 
 ---
 
-## Cấu trúc thư mục
+## Cấu trúc dự án
 
 ```
-finn-game/
+Darwin-s_adventure/
 ├── public/
-│   ├── assets/              # Models 3D, textures, âm thanh
-│   ├── minigame1/           # Minigame "Vượt qua con đường nguy hiểm"
-│   ├── minigame2/           # Minigame "Deep Sea Maze"
-│   ├── Happy.png            # Ảnh Happy Ending
-│   ├── Sashimi.png          # Ảnh Sashimi Ending
-│   ├── wall.jpg             # Texture tường biên map
-│   ├── start-screen.png     # Ảnh màn hình chờ
-│   └── PixelViet.ttf        # Font chữ
+│   ├── assets/
+│   │   ├── models/              # GLB models (player, NPC, donut, map...)
+│   │   ├── sounds/              # BGM và sound effects
+│   │   └── textures/            # sky.hdr, water.jpg
+│   ├── minigame1/               # Minigame "Vượt qua con đường nguy hiểm"
+│   │   └── src/                 # JS riêng của minigame (không qua Vite)
+│   ├── minigame2/               # Minigame "Giúp Đạt tìm món quà"
+│   ├── PixelViet.ttf            # Font chính của game
+│   ├── start-screen.png         # Ảnh nền màn hình Start
+│   ├── pop-up.png               # Ảnh Introduction popup
+│   ├── Happy.png / Sashimi.png  # Ảnh màn hình kết thúc
+│   └── wall.jpg                 # Texture tường biển
 ├── src/
-│   ├── main.js              # Entry point & màn hình Start
-│   ├── Game.js              # Game loop chính
-│   ├── Player.js            # Nhân vật người chơi
-│   ├── CharacterManager.js  # Quản lý NPC
-│   ├── QuestSystem.js       # Hệ thống quest Linh
-│   ├── MainQuestPanel.js    # Bảng nhiệm vụ tổng
-│   ├── MiniGameManager.js   # Quản lý iframe minigame
-│   ├── CollectibleManager.js# Hệ thống thu thập donut
-│   ├── EndingScreen.js      # Màn hình kết thúc
-│   ├── AudioManager.js      # Quản lý âm thanh
-│   └── assetUrl.js          # Helper đường dẫn asset
+│   ├── main.js                  # Entry point, màn hình Start, loading flow
+│   ├── LoadingScreen.js         # Loading screen với progress bar
+│   ├── Game.js                  # Game loop và khởi tạo toàn bộ hệ thống
+│   ├── Player.js                # Điều khiển và model nhân vật
+│   ├── ThirdPersonCamera.js     # Camera bám theo nhân vật
+│   ├── InputManager.js          # Quản lý input bàn phím/chuột
+│   ├── CharacterManager.js      # NPC: load model, dialogue, quest trigger
+│   ├── QuestGiver.js            # NPC Linh — mở Minigame 1
+│   ├── QuestSystem.js           # Hệ thống quest tổng
+│   ├── MainQuestPanel.js        # Bảng theo dõi nhiệm vụ góc phải
+│   ├── MiniGameManager.js       # Iframe overlay cho minigame
+│   ├── CollectibleManager.js    # Spawn và thu thập donut
+│   ├── SeaFloor.js              # Địa hình đáy biển (Simplex Noise)
+│   ├── SeaDecorations.js        # Load map.glb, animations môi trường
+│   ├── AudioManager.js          # BGM và sound effects
+│   ├── ParticleSystem.js        # Hiệu ứng bong bóng
+│   ├── Minimap.js               # Minimap góc phải
+│   ├── UIManager.js             # HUD: score, FPS counter
+│   ├── EndingScreen.js          # Màn hình Happy / Sashimi Ending
+│   ├── assetUrl.js              # Helper đường dẫn asset (dev vs production)
+│   ├── constants.js             # Hằng số game (speed, map size...)
+│   └── utils.js                 # Tiện ích chung
+├── .github/workflows/deploy.yml # CI/CD GitHub Actions
+├── .gitattributes               # Git LFS tracking (map.glb)
 ├── vite.config.js
 └── package.json
 ```
@@ -97,25 +104,41 @@ finn-game/
 
 ## Điều khiển
 
-| Phím | Hành động |
-|------|-----------|
+| Phím / Chuột | Hành động |
+|---|---|
 | `W A S D` | Di chuyển |
-| `Chuột` | Xoay camera |
-| `Scroll` | Zoom in / out |
-| `E` | Nói chuyện với NPC |
-| `Space` | Boost |
-| `ESC` | Thoát minigame / Tạm dừng |
+| Di chuyển chuột | Xoay camera |
+| Scroll chuột | Zoom in / out |
+| `E` | Tương tác / Nói chuyện với NPC |
+| `Space` (giữ) | Boost |
+| `ESC` | Thoát minigame |
 | `L` | Skip minigame (tính hoàn thành) |
 
 ---
 
 ## Gameplay
 
-1. Bơi đến gặp **Khánh** để nhận nhiệm vụ tổng
-2. Hoàn thành 4 nhiệm vụ phụ:
-   - **SpongeBob** — Tìm Gary
-   - **Linh** — Vượt qua con đường nguy hiểm (Minigame 1)
-   - **Đạt** — Giúp tìm món quà (Minigame 2)
-   - **Hùng** — Thu thập donut bị rơi
-3. Quay lại nói chuyện với Khánh để mở **Happy Ending**
-4. Tránh xa lưới câu để không dính **Sashimi Ending** 🎣
+```
+Bắt đầu → Gặp Khánh → Nhận 4 nhiệm vụ → Hoàn thành → Happy Ending
+                                                    ↘ Dính lưới → Sashimi Ending
+```
+
+| NPC | Nhiệm vụ |
+|---|---|
+| **Khánh** | Nhận nhiệm vụ tổng / kích hoạt Happy Ending |
+| **SpongeBob** | Tìm Gary đang bị lạc |
+| **Linh** | Vượt qua con đường nguy hiểm — **Minigame 1** |
+| **Đạt** | Giúp tìm món quà bị rơi — **Minigame 2** |
+| **Hùng** | Thu thập lại 10 donut bị rơi |
+
+Chạm vào **lưới câu của tàu** trước khi hoàn thành tất cả nhiệm vụ → **Sashimi Ending**.
+
+---
+
+## Kiến trúc nhanh
+
+- **Asset loading:** `THREE.DefaultLoadingManager` track tất cả loader (GLTFLoader, RGBELoader, TextureLoader). `LoadingScreen` lắng nghe `onProgress` / `onLoad` để hiển thị tiến độ.
+- **Asset paths:** `assetUrl.js` dùng `import.meta.env.BASE_URL` để tạo đường dẫn đúng cả khi dev (`/`) lẫn production (`/Darwin-s_adventure/`).
+- **Minigame:** Mỗi minigame là một trang HTML độc lập, được nhúng qua `<iframe>` bởi `MiniGameManager`. Giao tiếp với game chính bằng `postMessage`.
+- **Terrain:** `SeaFloor` dùng Simplex Noise để tạo địa hình đáy biển ngẫu nhiên. `Player` căn Y theo terrain height tại vị trí hiện tại.
+- **Git LFS:** Chỉ `map.glb` (241 MB) còn trong LFS. Các GLB nhỏ hơn được commit trực tiếp vào git để tránh vấn đề bandwidth GitHub Actions.
