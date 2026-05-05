@@ -11,6 +11,7 @@ const CHARACTERS = [
     file:        '/assets/models/decorations/sea_creatures/sponge_bob.glb',
     pos:         { x: -5.2,  y: -24,   z:  15.8 },
     scale:       1.5,
+    rotY:        150,
     headY:       4,
     dialogue: {
       text:    'Cậu có thể giúp tớ tìm Gary không ? (có thể cậu ấy đã bị bắt bởi người đàn ông khó tính nào đó -.-)',
