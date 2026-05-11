@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { assetUrl } from './assetUrl.js'
 import { SEA_FLOOR_Y, MAP_SIZE } from './constants.js'
 
@@ -61,7 +62,11 @@ export class SeaDecorations {
 
   // ── Load map.glb ────────────────────────────────────────────
   _load() {
+    const draco = new DRACOLoader()
+    draco.setDecoderPath(import.meta.env.BASE_URL + 'draco/')
+
     const loader = new GLTFLoader()
+    loader.setDRACOLoader(draco)
 
     loader.load(
       assetUrl('/assets/models/decorations/map.glb'),
